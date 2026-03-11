@@ -1,0 +1,70 @@
+.form-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 25px;
+  align-items: center; /* vertical align inputs */
+}
+
+.form-section input,
+.form-section select,
+.form-section .react-select__control {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #dcdfe6;
+  height: 38px;              /* uniform height for all inputs/selects */
+  box-sizing: border-box;
+}
+
+.form-section .react-select__control {
+  min-height: 38px;          /* match height with other fields */
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.primary-btn,
+.clear-btn {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;               /* match inputs height */
+  border: none;
+}
+
+.primary-btn {
+  background-color: #3f51b5;
+  color: #fff;
+}
+
+.primary-btn:hover {
+  background-color: #32408f;
+}
+
+.clear-btn {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.clear-btn:hover {
+  background-color: #5a6268;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .form-section {
+    grid-template-columns: 1fr; /* stack fields on small screens */
+  }
+}
