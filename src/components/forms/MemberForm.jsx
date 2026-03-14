@@ -23,6 +23,20 @@ const MemberForm = ({
     });
   };
 
+  // Add this helper function for age calculation display
+  const calculateAge = (dob) => {
+    if (!dob) return null;
+    const birth = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
   return (
     <div className="form-section">
       <input
@@ -35,6 +49,24 @@ const MemberForm = ({
         value={form.phone || ""}
         onChange={(e) => setForm({ ...form, phone: e.target.value })}
       />
+      
+      {/* NEW: Date of Birth field */}
+      <div className="dob-field-container">
+        <input
+          type="date"
+          placeholder="Date of Birth"
+          value={form.dateOfBirth || ""}
+          onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
+          max={new Date().toISOString().split('T')[0]} // Prevent future dates
+          className="dob-input"
+        />
+        {form.dateOfBirth && (
+          <span className="age-display">
+            Age: {calculateAge(form.dateOfBirth)} years
+          </span>
+        )}
+      </div>
+
       <select
         value={form.role || "Associate"}
         onChange={(e) => setForm({ ...form, role: e.target.value })}
@@ -47,6 +79,7 @@ const MemberForm = ({
         <option value="State President">State President</option>
       </select>
 
+      {/* Rest of your selects remain the same */}
       <Select
         isMulti
         name="skills"

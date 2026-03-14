@@ -1,0 +1,357 @@
+/* Member Detail Page - Matching Dashboard Theme */
+
+.member-detail-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.member-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.member-detail-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.back-btn {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  background-color: #3f51b5;
+  color: white;
+}
+
+.back-btn:hover {
+  background-color: #32408f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(63, 81, 181, 0.2);
+}
+
+/* Main content card */
+.member-detail-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-top: 4px solid #ccc;
+}
+
+.member-detail-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Role-based card top borders - matching dashboard role colors */
+.role-Associate {
+  border-top-color: #4CAF50;
+}
+.role-Member {
+  border-top-color: #2196F3;
+}
+.role-GuestMember {
+  border-top-color: #FF9800;
+}
+.role-DistrictSecretary {
+  border-top-color: #9C27B0;
+}
+.role-DistrictPresident {
+  border-top-color: #F44336;
+}
+.role-StatePresident {
+  border-top-color: #673AB7;
+}
+
+.detail-section {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e4ea;
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.detail-section h2 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.detail-section h3 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.role-badge-large {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info-item label {
+  font-size: 12px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.info-item span {
+  font-size: 16px;
+  color: #2c3e50;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.age-badge-large {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  padding: 6px 12px;
+  background-color: #f8f9fc;
+  border: 1px solid #e0e4ea;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #2c3e50;
+  transition: all 0.2s;
+}
+
+.tag:hover {
+  background-color: #e9ecef;
+  border-color: #3f51b5;
+  transform: translateY(-1px);
+}
+
+.no-data {
+  color: #95a5a6;
+  font-style: italic;
+  margin: 10px 0;
+  padding: 15px;
+  background-color: #f8f9fc;
+  border-radius: 8px;
+  border: 1px dashed #e0e4ea;
+  text-align: center;
+}
+
+.education-details {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f8f9fc;
+  border-radius: 8px;
+  border: 1px solid #e0e4ea;
+}
+
+.education-details p {
+  margin: 5px 0;
+  color: #2c3e50;
+}
+
+.education-details strong {
+  color: #3f51b5;
+  margin-right: 10px;
+  font-weight: 600;
+}
+
+.timestamps {
+  margin-top: 20px;
+  background-color: #f8f9fc;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.timestamp {
+  margin: 5px 0;
+  color: #7f8c8d;
+  font-size: 12px;
+}
+
+/* Loading State */
+.member-detail-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3f51b5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner + p {
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+/* Not Found State */
+.member-detail-not-found {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 40px auto;
+}
+
+.member-detail-not-found h2 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.member-detail-not-found p {
+  color: #7f8c8d;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .member-detail-container {
+    padding: 16px;
+  }
+
+  .member-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .member-detail-header h1 {
+    font-size: 20px;
+  }
+
+  .member-detail-card {
+    padding: 20px;
+  }
+
+  .detail-section h2 {
+    font-size: 24px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .info-item span {
+    font-size: 14px;
+  }
+
+  .tags-container {
+    gap: 8px;
+  }
+
+  .tag {
+    padding: 4px 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .member-detail-container {
+    padding: 12px;
+  }
+
+  .member-detail-card {
+    padding: 16px;
+  }
+
+  .back-btn {
+    width: 100%;
+  }
+
+  .member-detail-header h1 {
+    font-size: 18px;
+  }
+
+  .detail-section h2 {
+    font-size: 20px;
+  }
+
+  .detail-section h3 {
+    font-size: 16px;
+  }
+
+  .age-badge-large {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  .education-details {
+    padding: 12px;
+  }
+
+  .education-details p {
+    font-size: 13px;
+  }
+}

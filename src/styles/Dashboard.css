@@ -112,13 +112,6 @@
   background-color: #1a252f;
 }
 
-/* Individual button base states - all use add member color by default */
-.analytics-btn,
-.filter-btn,
-.sort-btn {
-  background-color: #3f51b5;
-}
-
 /* Logout button - stays red */
 .logout-btn {
   background-color: #e74c3c;
@@ -138,7 +131,7 @@
   background-color: #32408f;
 }
 
-/* Active indicator dot - shows when filter/sort is applied but panel is closed */
+/* Active indicator dot */
 .active-indicator {
   position: absolute;
   top: -2px;
@@ -172,7 +165,6 @@
   box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
 }
 
-/* Search input active state - when text is entered */
 .search-input.active {
   border-color: #f39c12;
   box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
@@ -188,7 +180,7 @@
   scroll-behavior: smooth;
 }
 
-/* Analytics Section with Scrollbar */
+/* Analytics Section */
 .analytics-section {
   max-height: 0;
   opacity: 0;
@@ -217,7 +209,7 @@
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar for analytics */
+/* Analytics scrollbar */
 .analytics-scrollable::-webkit-scrollbar {
   width: 8px;
 }
@@ -459,141 +451,201 @@
 
 .members-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 }
 
-/* Member Cards */
-.member-card {
+/* COMPACT MEMBER CARD STYLES - Reduced spacing */
+/* COMPACT MEMBER CARD STYLES - With role-based badge colors and age */
+.member-simple-card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: inherit;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-  border-radius: 12px;
-  background: white;
-  border: 1px solid #e0e4ea;
-  font-size: 13px;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  gap: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-left: 4px solid #ccc;
 }
 
-.member-card:hover {
+.member-simple-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  border-color: #3f51b5;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-.member-info strong {
+/* Role-based card borders */
+.role-Associate {
+  border-left-color: #4CAF50;
+}
+.role-Member {
+  border-left-color: #2196F3;
+}
+.role-GuestMember {
+  border-left-color: #FF9800;
+}
+.role-DistrictSecretary {
+  border-left-color: #9C27B0;
+}
+.role-DistrictPresident {
+  border-left-color: #F44336;
+}
+.role-StatePresident {
+  border-left-color: #673AB7;
+}
+
+.member-simple-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Role-based badge colors - matching the border colors */
+.member-simple-role {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: white;
+  align-self: flex-start;
+  letter-spacing: 0.3px;
+}
+
+.role-Associate .member-simple-role {
+  background-color: #4CAF50;
+}
+.role-Member .member-simple-role {
+  background-color: #2196F3;
+}
+.role-GuestMember .member-simple-role {
+  background-color: #FF9800;
+}
+.role-DistrictSecretary .member-simple-role {
+  background-color: #9C27B0;
+}
+.role-DistrictPresident .member-simple-role {
+  background-color: #F44336;
+}
+.role-StatePresident .member-simple-role {
+  background-color: #673AB7;
+}
+
+.member-simple-name {
+  margin: 0;
   font-size: 16px;
-  margin-bottom: 8px;
-  display: block;
+  font-weight: 600;
+  color: #2c3e50;
+  line-height: 1.3;
+}
+
+.member-simple-id {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-bottom: 2px;
+}
+
+/* Age styles */
+.member-simple-age {
+  font-size: 12px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0;
+  background-color: #f8f9fc;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border-left: 2px solid #3f51b5;
+}
+
+.age-label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.age-value {
+  color: #3f51b5;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.member-simple-career {
+  font-size: 12px;
+  color: #555;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.career-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.career-value {
   color: #2c3e50;
 }
 
-.member-info span {
-  display: block;
-  margin: 4px 0;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  color: #34495e;
+.career-value.none {
+  color: #95a5a6;
+  font-style: italic;
 }
 
-.member-detail {
-  font-size: 12px;
-  color: #7f8c8d;
-}
-
-/* Count Badge - FIXED with white text */
-.count-badge {
-  display: inline-block;
-  background: #3f51b5;
-  color: white !important;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 12px;
-  margin-left: 6px;
-}
-
-/* Role Badges */
-.role-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 20px;
-  margin-bottom: 10px;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.role-Associate .role-badge { background: #4caf50; }
-.role-Member .role-badge { background: #2196f3; }
-.role-GuestMember .role-badge { background: #9e9e9e; }
-.role-DistrictSecretary .role-badge { background: #673ab7; }
-.role-DistrictPresident .role-badge { background: #ff9800; }
-.role-StatePresident .role-badge { background: #e53935; }
-
-/* Role-specific card styles */
-.role-Associate { border-left: 4px solid #4caf50; }
-.role-Member { border-left: 4px solid #2196f3; }
-.role-GuestMember { border-left: 4px solid #9e9e9e; }
-.role-DistrictSecretary { border-left: 4px solid #673ab7; }
-.role-DistrictPresident { border-left: 4px solid #ff9800; }
-.role-StatePresident { border-left: 4px solid #e53935; }
-
-/* Member Actions */
-.member-actions {
+.member-simple-actions {
   display: flex;
   gap: 8px;
-  margin-top: 16px;
-  padding-top: 12px;
+  margin-top: 8px;
   border-top: 1px solid #ecf0f1;
+  padding-top: 12px;
 }
 
-.edit-btn,
-.delete-btn {
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 500;
+.member-simple-actions button {
+  flex: 1;
+  padding: 6px 8px;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
-  border: none;
-  flex: 1;
-  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
   transition: all 0.2s;
 }
 
-.edit-btn {
+.member-simple-actions .edit-btn {
   background-color: #3f51b5;
   color: white;
 }
 
-.edit-btn:hover:not(:disabled) {
+.member-simple-actions .edit-btn:hover {
   background-color: #32408f;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(63, 81, 181, 0.3);
 }
 
-.delete-btn {
+.member-simple-actions .delete-btn {
   background-color: #e74c3c;
   color: white;
 }
 
-.delete-btn:hover:not(:disabled) {
+.member-simple-actions .delete-btn:hover {
   background-color: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
 }
 
-.edit-btn:disabled,
-.delete-btn:disabled {
-  opacity: 0.6;
+.member-simple-actions .delete-btn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
-}
-
-.member-timestamp {
-  font-size: 11px;
-  color: #95a5a6;
-  margin-top: 8px;
-  font-style: italic;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Custom Scrollbar for main content */
@@ -690,6 +742,11 @@
 
   .members-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .member-simple-card {
+    padding: 14px;
   }
 
   .analytics-section.visible {
@@ -730,11 +787,20 @@
     grid-template-columns: 1fr;
   }
 
-  .member-card {
-    padding: 16px;
-  }
-
   .sort-label {
     display: none;
+  }
+
+  .member-simple-card {
+    padding: 12px;
+  }
+
+  .member-simple-name {
+    font-size: 15px;
+  }
+
+  .member-simple-actions button {
+    padding: 5px 6px;
+    font-size: 11px;
   }
 }

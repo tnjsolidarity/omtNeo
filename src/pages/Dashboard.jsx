@@ -1,4 +1,7 @@
 import { useEffect, useState, useRef } from "react";
+import { FiUserPlus, FiArrowUp, FiArrowDown } from "react-icons/fi";
+import Select from "react-select";
+import { Link } from "react-router-dom";
 import {
   getMembers,
   createMember,
@@ -8,8 +11,6 @@ import {
 import "../styles/Dashboard.css";
 import MemberForm from "../components/forms/MemberForm";
 import MemberAnalytics from "../components/analytics/MemberAnalytics";
-import { FiUserPlus, FiArrowUp, FiArrowDown } from "react-icons/fi";
-import Select from "react-select";
 
 function Dashboard() {
   const formRef = useRef(null);
@@ -22,6 +23,7 @@ function Dashboard() {
     name: "",
     phone: "",
     role: "Associate",
+    dateOfBirth: "",
     skills: [],
     career: [],
     education: [],
@@ -38,9 +40,8 @@ function Dashboard() {
   const [skillFilter, setSkillFilter] = useState([]);
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
   
-  // New state for sorting
   const [sortConfig, setSortConfig] = useState({
-    key: 'name', // Default sort by name
+    key: 'name',
     direction: 'asc'
   });
   const [sortOpen, setSortOpen] = useState(false);
@@ -128,19 +129,10 @@ function Dashboard() {
     return { value: year, label: year.toString() };
   });
 
-  // Complete sort options with all fields
   const sortOptions = [
     { value: 'name', label: 'Name' },
     { value: 'role', label: 'Role' },
     { value: 'memberId', label: 'Member ID' },
-    { value: 'phone', label: 'Phone' },
-    { value: 'skills', label: 'Skills Count' },
-    { value: 'career', label: 'Career Count' },
-    { value: 'education', label: 'Education Count' },
-    { value: 'educationalDepartment', label: 'Department' },
-    { value: 'passedOutYear', label: 'Passed Out Year' },
-    { value: 'updatedAt', label: 'Last Updated' },
-    { value: 'createdAt', label: 'Created Date' },
   ];
 
   const handleSubmit = async () => {
@@ -148,14 +140,13 @@ function Dashboard() {
     try {
       const payload = {
         ...form,
+        dateOfBirth: form.dateOfBirth || null,
         skills: form.skills?.map((s) => s.value) || [],
         career: form.career?.map((c) => c.value) || [],
         education: form.education?.map((e) => e.value) || [],
         educationalDepartment: form.educationalDepartment || "",
         passedOutYear: form.passedOutYear ? parseInt(form.passedOutYear) : null,
       };
-
-      console.log("Submitting payload:", payload);
 
       if (editingId) {
         await updateMember(editingId, payload);
@@ -180,6 +171,7 @@ function Dashboard() {
       name: "",
       phone: "",
       role: "Associate",
+      dateOfBirth: "",
       skills: [],
       career: [],
       education: [],
@@ -194,6 +186,9 @@ function Dashboard() {
       name: member.name || "",
       phone: member.phone || "",
       role: member.role || "Associate",
+      dateOfBirth: member.dateOfBirth
+        ? member.dateOfBirth.split("T")[0]
+        : "",
       skills: member.skills
         ? member.skills.map((skill) => ({ value: skill, label: skill }))
         : [],
@@ -233,12 +228,10 @@ function Dashboard() {
     window.location.href = "/";
   };
 
-  // Scroll to top function
   const scrollToTop = () => {
     document.querySelector('.dashboard-content')?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Handle search with scroll
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     if (e.target.value) {
@@ -246,7 +239,6 @@ function Dashboard() {
     }
   };
 
-  // Handle filter toggle with scroll
   const handleFilterToggle = () => {
     setFilterOpen(!filterOpen);
     if (!filterOpen) {
@@ -258,7 +250,6 @@ function Dashboard() {
     }
   };
 
-  // Handle sort toggle with scroll
   const handleSortToggle = () => {
     setSortOpen(!sortOpen);
     if (!sortOpen) {
@@ -270,7 +261,6 @@ function Dashboard() {
     }
   };
 
-  // Handle analytics toggle with scroll
   const handleAnalyticsToggle = () => {
     setAnalyticsOpen(!analyticsOpen);
     if (!analyticsOpen) {
@@ -282,7 +272,6 @@ function Dashboard() {
     }
   };
 
-  // Handle add member toggle with scroll
   const handleAddMemberToggle = () => {
     setFormOpen(!formOpen);
     if (!formOpen) {
@@ -294,7 +283,6 @@ function Dashboard() {
     }
   };
 
-  // Sorting function
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -310,22 +298,9 @@ function Dashboard() {
       let aValue = a[sortConfig.key];
       let bValue = b[sortConfig.key];
 
-      // Handle array fields (skills, career, education) - sort by count
-      if (Array.isArray(aValue) && Array.isArray(bValue)) {
-        aValue = aValue.length;
-        bValue = bValue.length;
-      }
-      // Handle null/undefined values
-      else if (aValue === null || aValue === undefined) aValue = '';
-      else if (bValue === null || bValue === undefined) bValue = '';
+      if (aValue === null || aValue === undefined) aValue = '';
+      if (bValue === null || bValue === undefined) bValue = '';
 
-      // Special handling for dates
-      if (sortConfig.key === 'updatedAt' || sortConfig.key === 'createdAt') {
-        aValue = aValue ? new Date(aValue).getTime() : 0;
-        bValue = bValue ? new Date(bValue).getTime() : 0;
-      }
-
-      // Handle string comparison
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         aValue = aValue.toLowerCase();
         bValue = bValue.toLowerCase();
@@ -341,21 +316,13 @@ function Dashboard() {
     });
   };
 
-  // First filter, then sort
   const filteredMembers = members.filter((member) => {
     const term = searchTerm.toLowerCase();
 
     const matchesSearch =
       member.name?.toLowerCase().includes(term) ||
-      String(member.phone || "").toLowerCase().includes(term) ||
       member.memberId?.toLowerCase().includes(term) ||
-      member.skills?.some((skill) =>
-        String(skill).toLowerCase().includes(term)
-      ) ||
-      member.career?.some((c) => String(c).toLowerCase().includes(term)) ||
-      member.education?.some((e) => String(e).toLowerCase().includes(term)) ||
-      member.educationalDepartment?.toLowerCase().includes(term) ||
-      String(member.passedOutYear || "").includes(term);
+      member.career?.some((c) => String(c).toLowerCase().includes(term));
 
     const matchesRole = roleFilter ? member.role === roleFilter : true;
 
@@ -371,11 +338,24 @@ function Dashboard() {
 
   const sortedAndFilteredMembers = getSortedMembers(filteredMembers);
 
-  // Check if filters are active
   const isFilterActive = roleFilter !== "" || skillFilter.length > 0;
   const isSortActive = sortConfig.key !== 'name' || sortConfig.direction !== 'asc';
   const isAnalyticsActive = analyticsOpen;
   const isSearchActive = searchTerm !== "";
+
+  // Add this helper function near the top of your component, after the state declarations
+  const calculateAge = (dob) => {
+    if (!dob) return null;
+    const birth = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
   return (
     <div className="dashboard-fullpage" ref={formRef}>
@@ -385,9 +365,7 @@ function Dashboard() {
           <div className="dashboard-header-content">
             <h2 
               className="dashboard-title"
-              onClick={() => {
-                scrollToTop();
-              }}
+              onClick={scrollToTop}
             >
               Member Management
             </h2>
@@ -403,7 +381,7 @@ function Dashboard() {
                 <input
                   ref={searchRef}
                   type="text"
-                  placeholder="Search members..."
+                  placeholder="Search by name, ID, or career..."
                   value={searchTerm}
                   onChange={handleSearchChange}
                   className={`search-input ${isSearchActive ? 'active' : ''}`}
@@ -419,7 +397,6 @@ function Dashboard() {
                 {isFilterActive && !filterOpen && <span className="active-indicator"></span>}
               </button>
 
-              {/* Sort Button */}
               <button
                 ref={sortRef}
                 className={`action-btn sort-btn ${sortOpen ? 'active' : ''} ${isSortActive ? 'used' : ''}`}
@@ -452,7 +429,7 @@ function Dashboard() {
 
         {/* Scrollable Content Area */}
         <div className="dashboard-content">
-          {/* Analytics Section with Scrollbar */}
+          {/* Analytics Section */}
           <div 
             ref={analyticsRef}
             className={`analytics-section ${analyticsOpen ? "visible" : ""}`}
@@ -576,55 +553,66 @@ function Dashboard() {
             )}
           </div>
 
-          {/* Members Grid */}
+          {/* Members Grid - SIMPLIFIED to show only role, name, ID, and career */}
           <div className="members-grid-container">
             {sortedAndFilteredMembers.length === 0 ? (
               <div className="no-members">No members found.</div>
             ) : (
               <div className="members-grid">
                 {sortedAndFilteredMembers.map((member) => (
-                  <div
-                    className={`member-card role-${member.role?.replace(/\s+/g, "") || "Associate"}`}
+                  <Link
+                    to={`/members/${member._id}`}
+                    className={`member-simple-card role-${member.role?.replace(/\s+/g, "") || "Associate"}`}
                     key={member._id}
                   >
-                    <div className="member-info">
-                      <div className="role-badge">{member.role}</div>
-                      <strong>{member.name}</strong>
-                      <span>ID: {member.memberId || "Not assigned"}</span>
-                      <span>Phone: {member.phone || "Not provided"}</span>
-                      <span className="member-detail">
-                        Skills: {member.skills?.length ? member.skills.join(", ") : "None"}
-                        {member.skills?.length > 0 && <span className="count-badge">{member.skills.length}</span>}
-                      </span>
-                      <span className="member-detail">
-                        Career: {member.career?.length ? member.career.join(", ") : "None"}
-                        {member.career?.length > 0 && <span className="count-badge">{member.career.length}</span>}
-                      </span>
-                      <span className="member-detail">
-                        Education: {member.education?.length ? member.education.join(", ") : "None"}
-                        {member.education?.length > 0 && <span className="count-badge">{member.education.length}</span>}
-                      </span>
-                      <span>Department: {member.educationalDepartment || "None"}</span>
-                      <span>Passed Out: {member.passedOutYear || "None"}</span>
-                      {member.updatedAt && (
-                        <span className="member-timestamp">
-                          Updated: {new Date(member.updatedAt).toLocaleString()}
-                        </span>
+                    <div className="member-simple-content">
+                      <div className="member-simple-role">{member.role}</div>
+                      <h3 className="member-simple-name">{member.name}</h3>
+                      <div className="member-simple-id">ID: {member.memberId || "Not assigned"}</div>
+                      
+                      {/* Age Display */}
+                      {member.dateOfBirth && (
+                        <div className="member-simple-age">
+                          <span className="age-label">Age: </span>
+                          <span className="age-value">{calculateAge(member.dateOfBirth)} years</span>
+                        </div>
                       )}
+                      
+                      <div className="member-simple-career">
+                        <span className="career-label">Career:</span>
+                        {member.career?.length > 0 ? (
+                          <span className="career-value">{member.career.join(", ")}</span>
+                        ) : (
+                          <span className="career-value none">None</span>
+                        )}
+                      </div>
                     </div>
-                    <div className="member-actions">
-                      <button className="edit-btn" onClick={() => handleEdit(member)}>
+
+                    <div className="member-simple-actions">
+                      <button
+                        className="edit-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleEdit(member);
+                        }}
+                      >
                         Edit
                       </button>
+
                       <button
                         className="delete-btn"
-                        onClick={() => handleDelete(member._id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDelete(member._id);
+                        }}
                         disabled={deletingId === member._id}
                       >
-                        {deletingId === member._id ? "Deleting..." : "Delete"}
+                        {deletingId === member._id ? "..." : "Delete"}
                       </button>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
