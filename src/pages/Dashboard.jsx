@@ -151,13 +151,14 @@ function Dashboard() {
       if (editingId) {
         await updateMember(editingId, payload);
         setEditingId(null);
-        setFormOpen(false);
       } else {
         await createMember(payload);
       }
 
       handleClear();
+      setFormOpen(false);   // ✅ CLOSE MODAL HERE
       await fetchMembers();
+
     } catch (err) {
       console.error(err);
       alert("Something went wrong");
@@ -203,10 +204,6 @@ function Dashboard() {
     });
     setEditingId(member._id);
     setFormOpen(true);
-
-    setTimeout(() => {
-      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
   };
 
   const handleDelete = async (id) => {
@@ -274,13 +271,6 @@ function Dashboard() {
 
   const handleAddMemberToggle = () => {
     setFormOpen(!formOpen);
-    if (!formOpen) {
-      setTimeout(() => {
-        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    } else {
-      scrollToTop();
-    }
   };
 
   const handleSort = (key) => {
@@ -526,21 +516,27 @@ function Dashboard() {
           </div>
 
           {/* Form Section */}
-          <div className={`form-section-wrapper ${formOpen ? "visible" : ""}`}>
-            <MemberForm
-              form={form}
-              setForm={setForm}
-              handleSubmit={handleSubmit}
-              loading={loading}
-              editingId={editingId}
-              handleClear={handleClear}
-              skillOptions={skillOptions}
-              careerOptions={careerOptions}
-              educationOptions={educationOptions}
-              departmentOptions={departmentOptions}
-              passedOutYearOptions={passedOutYearOptions}
-            />
-          </div>
+          {formOpen && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+
+                <MemberForm
+                  form={form}
+                  setForm={setForm}
+                  handleSubmit={handleSubmit}
+                  loading={loading}
+                  editingId={editingId}
+                  handleClear={handleClear}
+                  skillOptions={skillOptions}
+                  careerOptions={careerOptions}
+                  educationOptions={educationOptions}
+                  departmentOptions={departmentOptions}
+                  passedOutYearOptions={passedOutYearOptions}
+                  handleClose={() => setFormOpen(false)}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Results Summary */}
           <div className="results-summary">

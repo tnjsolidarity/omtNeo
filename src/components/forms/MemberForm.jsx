@@ -1,5 +1,6 @@
 import React from "react";
 import Select from "react-select";
+import { FiX } from "react-icons/fi"; // Import FiX for the close icon
 import "./MemberForm.css";
 
 const MemberForm = ({
@@ -9,6 +10,7 @@ const MemberForm = ({
   loading,
   editingId,
   handleClear,
+  handleClose, // Add this prop
   skillOptions,
   careerOptions,
   educationOptions,
@@ -37,128 +39,195 @@ const MemberForm = ({
     return age;
   };
 
+  // Custom styles for React Select
+  const selectStyles = {
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    control: (base) => ({ 
+      ...base, 
+      minHeight: '38px',
+      height: 'auto',
+    }),
+    clearIndicator: (base) => ({
+      ...base,
+      padding: '4px',
+      cursor: 'pointer',
+      '&:hover': {
+        color: '#dc3545',
+      }
+    }),
+    indicatorSeparator: (base) => ({
+      ...base,
+      display: 'none',
+    }),
+    dropdownIndicator: (base) => ({
+      ...base,
+      padding: '4px',
+    }),
+    valueContainer: (base) => ({
+      ...base,
+      padding: '2px 8px',
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: '#e8f0fe',
+      borderRadius: '4px',
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: '#3f51b5',
+      fontSize: '13px',
+    }),
+    multiValueRemove: (base) => ({
+      ...base,
+      color: '#3f51b5',
+      '&:hover': {
+        backgroundColor: '#3f51b5',
+        color: 'white',
+      }
+    }),
+  };
+
   return (
-    <div className="form-section">
-      <input
-        placeholder="Name"
-        value={form.name || ""}
-        onChange={(e) => setForm({ ...form, name: e.target.value })}
-      />
-      <input
-        placeholder="Phone"
-        value={form.phone || ""}
-        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-      />
-      
-      {/* NEW: Date of Birth field */}
-      <div className="dob-field-container">
-        <input
-          type="date"
-          placeholder="Date of Birth"
-          value={form.dateOfBirth || ""}
-          onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
-          max={new Date().toISOString().split('T')[0]} // Prevent future dates
-          className="dob-input"
-        />
-        {form.dateOfBirth && (
-          <span className="age-display">
-            Age: {calculateAge(form.dateOfBirth)} years
-          </span>
-        )}
+    <div className="member-form-container">
+      {/* Form Header with Title and Close Button */}
+      <div className="form-header">
+        <h3>{editingId ? 'Edit Member' : 'Add New Member'}</h3>
+        <button 
+          className="form-close-btn"
+          onClick={handleClose}
+          type="button"
+          aria-label="Close"
+        >
+          <FiX size={20} />
+        </button>
       </div>
 
-      <select
-        value={form.role || "Associate"}
-        onChange={(e) => setForm({ ...form, role: e.target.value })}
-      >
-        <option value="Associate">Associate</option>
-        <option value="Member">Member</option>
-        <option value="GuestMember">GuestMember</option>
-        <option value="District Secretary">District Secretary</option>
-        <option value="District President">District President</option>
-        <option value="State President">State President</option>
-      </select>
+      <div className="form-section">
+        <input
+          placeholder="Name"
+          value={form.name || ""}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+        <input
+          placeholder="Phone"
+          value={form.phone || ""}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        />
+        
+        {/* Date of Birth field */}
+        <div className="dob-field-container">
+          <input
+            type="date"
+            placeholder="Date of Birth"
+            value={form.dateOfBirth || ""}
+            onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
+            max={new Date().toISOString().split('T')[0]}
+            className="dob-input"
+          />
+          {form.dateOfBirth && (
+            <span className="age-display">
+              Age: {calculateAge(form.dateOfBirth)} years
+            </span>
+          )}
+        </div>
 
-      {/* Rest of your selects remain the same */}
-      <Select
-        isMulti
-        name="skills"
-        options={skillOptions}
-        value={form.skills || []}
-        onChange={(selectedOptions) => setForm({ ...form, skills: selectedOptions || [] })}
-        placeholder="Select skills"
-        menuPortalTarget={document.body}
-        styles={{
-          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-        }}
-      />
-
-      <Select
-        isMulti
-        name="career"
-        options={careerOptions}
-        value={form.career || []}
-        onChange={(selected) => setForm({ ...form, career: selected || [] })}
-        placeholder="Select career"
-        menuPortalTarget={document.body}
-        styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
-      />
-
-      <Select
-        isMulti
-        name="education"
-        options={educationOptions}
-        value={form.education || []}
-        onChange={(selected) => setForm({ ...form, education: selected || [] })}
-        placeholder="Select education"
-        menuPortalTarget={document.body}
-        styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
-      />
-
-      {/* Educational Department */}
-      <Select
-        name="educationalDepartment"
-        options={departmentOptions}
-        value={departmentOptions.find(d => d.value === form.educationalDepartment) || null}
-        onChange={(selected) =>
-          setForm({ ...form, educationalDepartment: selected ? selected.value : "" })
-        }
-        placeholder="Select Department"
-        isClearable
-        menuPortalTarget={document.body}
-        styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
-      />
-
-      {/* Passed Out Year - FIXED */}
-      <Select
-        name="passedOutYear"
-        options={passedOutYearOptions}
-        value={passedOutYearOptions.find(y => y.value === form.passedOutYear) || null}
-        onChange={handlePassedOutYearChange}
-        placeholder="Select Passed Out Year"
-        isClearable
-        menuPortalTarget={document.body}
-        styles={{ 
-          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-          control: (base) => ({ ...base, minHeight: '38px' })
-        }}
-      />
-
-      <div className="form-buttons">
-        <button
-          className="primary-btn"
-          onClick={handleSubmit}
-          disabled={loading}
+        <select
+          value={form.role || "Associate"}
+          onChange={(e) => setForm({ ...form, role: e.target.value })}
         >
-          {loading ? "Processing..." : editingId ? "Update Member" : "Add Member"}
-        </button>
-        <button
-          type="button"
-          className="clear-btn"
-          onClick={handleClear}
-        >
-          Clear
-        </button>
+          <option value="Associate">Associate</option>
+          <option value="Member">Member</option>
+          <option value="GuestMember">GuestMember</option>
+          <option value="District Secretary">District Secretary</option>
+          <option value="District President">District President</option>
+          <option value="State President">State President</option>
+        </select>
+
+        <Select
+          isMulti
+          name="skills"
+          options={skillOptions}
+          value={form.skills || []}
+          onChange={(selectedOptions) => setForm({ ...form, skills: selectedOptions || [] })}
+          placeholder="Select skills"
+          menuPortalTarget={document.body}
+          styles={selectStyles}
+          className="react-select-container"
+          classNamePrefix="react-select"
+        />
+
+        <Select
+          isMulti
+          name="career"
+          options={careerOptions}
+          value={form.career || []}
+          onChange={(selected) => setForm({ ...form, career: selected || [] })}
+          placeholder="Select career"
+          menuPortalTarget={document.body}
+          styles={selectStyles}
+          className="react-select-container"
+          classNamePrefix="react-select"
+        />
+
+        <Select
+          isMulti
+          name="education"
+          options={educationOptions}
+          value={form.education || []}
+          onChange={(selected) => setForm({ ...form, education: selected || [] })}
+          placeholder="Select education"
+          menuPortalTarget={document.body}
+          styles={selectStyles}
+          className="react-select-container"
+          classNamePrefix="react-select"
+        />
+
+        {/* Educational Department */}
+        <Select
+          name="educationalDepartment"
+          options={departmentOptions}
+          value={departmentOptions.find(d => d.value === form.educationalDepartment) || null}
+          onChange={(selected) =>
+            setForm({ ...form, educationalDepartment: selected ? selected.value : "" })
+          }
+          placeholder="Select Department"
+          isClearable
+          menuPortalTarget={document.body}
+          styles={selectStyles}
+          className="react-select-container"
+          classNamePrefix="react-select"
+        />
+
+        {/* Passed Out Year */}
+        <Select
+          name="passedOutYear"
+          options={passedOutYearOptions}
+          value={passedOutYearOptions.find(y => y.value === form.passedOutYear) || null}
+          onChange={handlePassedOutYearChange}
+          placeholder="Select Passed Out Year"
+          isClearable
+          menuPortalTarget={document.body}
+          styles={selectStyles}
+          className="react-select-container"
+          classNamePrefix="react-select"
+        />
+
+        <div className="form-buttons">
+          <button
+            className="primary-btn"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : editingId ? "Update Member" : "Add Member"}
+          </button>
+          <button
+            type="button"
+            className="clear-btn"
+            onClick={handleClear}
+          >
+            Clear
+          </button>
+        </div>
       </div>
     </div>
   );

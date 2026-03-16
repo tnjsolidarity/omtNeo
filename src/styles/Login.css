@@ -19,26 +19,26 @@ body {
   position: relative;
   background-repeat: no-repeat;
   background-position: center;
-  background-size: cover; /* 'cover' usually looks better for full-page backgrounds */
-  padding: 20px; /* Ensures the card doesn't touch screen edges on mobile */
+  background-size: cover;
+  padding: 20px;
 }
 
 /* Overlay to soften background */
 .login-wrapper::before {
   content: "";
   position: absolute;
-  inset: 0; /* Shorthand for top:0, left:0, bottom:0, right:0 */
-  background-color: rgba(244, 246, 249, 0.75); /* Slightly darker for better contrast */
+  inset: 0;
+  background-color: rgba(244, 246, 249, 0.75);
   z-index: 1;
 }
 
 /* Login Card */
 .login-card {
   width: 100%;
-  max-width: 420px; /* Responsive width */
+  max-width: 420px;
   background: #ffffff;
-  padding: 48px 40px; /* Increased vertical padding for breathing room */
-  border-radius: 12px; /* Softer, modern corners */
+  padding: 48px 40px;
+  border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   position: relative;
   z-index: 2;
@@ -76,7 +76,7 @@ body {
 
 .form-group input {
   width: 100%;
-  padding: 12px 14px; /* Larger hit-area for better UX */
+  padding: 12px 14px;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   font-size: 14px;
@@ -93,13 +93,13 @@ body {
 .form-group input:focus {
   border-color: #3f51b5;
   background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.15); /* Nice focus ring */
+  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.15);
 }
 
 /* Login Button */
 .login-btn {
   width: 100%;
-  height: 44px; /* Fixed height prevents layout shift during loading state */
+  height: 44px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -119,7 +119,7 @@ body {
 }
 
 .login-btn:active:not(:disabled) {
-  transform: translateY(1px); /* Subtle click effect */
+  transform: translateY(1px);
 }
 
 /* Disabled button state */
