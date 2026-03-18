@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getMembers } from "../services/memberService";
-import "../styles/MemberDetail.css"; // We'll create this CSS file
+import { getMembers } from "../../services/memberService";
+import "../../styles/MemberDetail.css"; // We'll create this CSS file
 
 function MemberDetail() {
   const { id } = useParams();

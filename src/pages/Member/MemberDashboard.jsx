@@ -1,18 +1,23 @@
 import { useEffect, useState, useRef } from "react";
-import { FiUserPlus, FiArrowUp, FiArrowDown } from "react-icons/fi";
+import { FiUserPlus, FiArrowUp, FiArrowDown, FiChevronDown } from "react-icons/fi";
 import Select from "react-select";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   getMembers,
   createMember,
   deleteMember,
   updateMember,
-} from "../services/memberService";
-import "../styles/Dashboard.css";
-import MemberForm from "../components/forms/MemberForm";
-import MemberAnalytics from "../components/analytics/MemberAnalytics";
+} from "../../services/memberService";
+import "../../styles/MemberDashboard.css";
+import MemberForm from "../../components/forms/MemberForm";
+import MemberAnalytics from "../../components/analytics/MemberAnalytics";
 
-function Dashboard() {
+function MemberDashboard() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [dashboardDropdownOpen, setDashboardDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  
   const formRef = useRef(null);
   const analyticsRef = useRef(null);
   const filterRef = useRef(null);
@@ -57,6 +62,16 @@ function Dashboard() {
 
   useEffect(() => {
     fetchMembers();
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDashboardDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const roleOptions = [
@@ -133,7 +148,25 @@ function Dashboard() {
     { value: 'name', label: 'Name' },
     { value: 'role', label: 'Role' },
     { value: 'memberId', label: 'Member ID' },
+    { value: 'phone', label: 'Phone' },
+    { value: 'dateOfBirth', label: 'Date of Birth' },
+    { value: 'skills', label: 'Skills Count' },
+    { value: 'career', label: 'Career Count' },
+    { value: 'education', label: 'Education Count' },
+    { value: 'educationalDepartment', label: 'Department' },
+    { value: 'passedOutYear', label: 'Passed Out Year' },
+    { value: 'createdAt', label: 'Created Date' },
+    { value: 'updatedAt', label: 'Updated Date' },
   ];
+
+  const ROLE_ORDER = {
+    'State President': 1,
+    'District President': 2,
+    'District Secretary': 3,
+    'Member': 4,
+    'Associate': 5,
+    'GuestMember': 6
+  };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -285,26 +318,50 @@ function Dashboard() {
     if (!sortConfig.key) return membersToSort;
 
     return [...membersToSort].sort((a, b) => {
-      let aValue = a[sortConfig.key];
-      let bValue = b[sortConfig.key];
-
-      if (aValue === null || aValue === undefined) aValue = '';
-      if (bValue === null || bValue === undefined) bValue = '';
-
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        aValue = aValue.toLowerCase();
-        bValue = bValue.toLowerCase();
+      // Handle special cases first
+      if (sortConfig.key === 'role') {
+        const roleA = ROLE_ORDER[a.role] || 999;
+        const roleB = ROLE_ORDER[b.role] || 999;
+        return sortConfig.direction === 'asc' ? roleA - roleB : roleB - roleA;
       }
-
-      if (aValue < bValue) {
-        return sortConfig.direction === 'asc' ? -1 : 1;
+      
+      // Handle array fields (sort by length)
+      if (sortConfig.key === 'skills' || sortConfig.key === 'career' || sortConfig.key === 'education') {
+        const lengthA = (a[sortConfig.key] || []).length;
+        const lengthB = (b[sortConfig.key] || []).length;
+        return sortConfig.direction === 'asc' ? lengthA - lengthB : lengthB - lengthA;
       }
-      if (aValue > bValue) {
-        return sortConfig.direction === 'asc' ? 1 : -1;
+      
+      // Handle date fields
+      if (sortConfig.key === 'dateOfBirth' || sortConfig.key === 'createdAt' || sortConfig.key === 'updatedAt') {
+        const dateA = a[sortConfig.key] ? new Date(a[sortConfig.key]).getTime() : 0;
+        const dateB = b[sortConfig.key] ? new Date(b[sortConfig.key]).getTime() : 0;
+        return sortConfig.direction === 'asc' ? dateA - dateB : dateB - dateA;
       }
+      
+      // Handle numeric fields
+      if (sortConfig.key === 'passedOutYear') {
+        const yearA = a.passedOutYear || 0;
+        const yearB = b.passedOutYear || 0;
+        return sortConfig.direction === 'asc' ? yearA - yearB : yearB - yearA;
+      }
+      
+      // Handle string fields
+      if (sortConfig.key === 'name' || sortConfig.key === 'memberId' || 
+          sortConfig.key === 'phone' || sortConfig.key === 'educationalDepartment') {
+        const valA = (a[sortConfig.key] || '').toString().toLowerCase();
+        const valB = (b[sortConfig.key] || '').toString().toLowerCase();
+        
+        if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      }
+      
       return 0;
     });
   };
+
+  const isSortActive = sortConfig.key !== 'name' || sortConfig.direction !== 'asc';
 
   const filteredMembers = members.filter((member) => {
     const term = searchTerm.toLowerCase();
@@ -329,7 +386,6 @@ function Dashboard() {
   const sortedAndFilteredMembers = getSortedMembers(filteredMembers);
 
   const isFilterActive = roleFilter !== "" || skillFilter.length > 0;
-  const isSortActive = sortConfig.key !== 'name' || sortConfig.direction !== 'asc';
   const isAnalyticsActive = analyticsOpen;
   const isSearchActive = searchTerm !== "";
 
@@ -353,12 +409,37 @@ function Dashboard() {
         {/* Sticky Header */}
         <div className="dashboard-header-sticky">
           <div className="dashboard-header-content">
-            <h2 
-              className="dashboard-title"
-              onClick={scrollToTop}
-            >
-              Member Management
-            </h2>
+            <div className="header-left">
+              <div className="custom-dropdown" ref={dropdownRef}>
+                <button 
+                  className="custom-dropdown-toggle"
+                  onClick={() => setDashboardDropdownOpen(!dashboardDropdownOpen)}
+                >
+                  <span className="dropdown-label">
+                    {location.pathname === '/projectdashboard' ? 'Project Dashboard' : 'Member Dashboard'}
+                  </span>
+                  <FiChevronDown className={`dropdown-icon ${dashboardDropdownOpen ? 'open' : ''}`} />
+                </button>
+                {dashboardDropdownOpen && (
+                  <div className="custom-dropdown-menu">
+                    <Link 
+                      to="/memberdashboard"
+                      className={`dropdown-item ${location.pathname === '/memberdashboard' ? 'active' : ''}`}
+                      onClick={() => setDashboardDropdownOpen(false)}
+                    >
+                      Member Dashboard
+                    </Link>
+                    <Link 
+                      to="/projectdashboard"
+                      className={`dropdown-item ${location.pathname === '/projectdashboard' ? 'active' : ''}`}
+                      onClick={() => setDashboardDropdownOpen(false)}
+                    >
+                      Project Dashboard
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="header-actions">
               <button
                 className={`action-btn analytics-btn ${analyticsOpen ? 'active' : ''} ${isAnalyticsActive ? 'used' : ''}`}
@@ -392,13 +473,22 @@ function Dashboard() {
                 className={`action-btn sort-btn ${sortOpen ? 'active' : ''} ${isSortActive ? 'used' : ''}`}
                 onClick={handleSortToggle}
               >
-                Sort 
-                {sortConfig.key && (
-                  <span className="sort-label">
-                    {sortOptions.find(opt => opt.value === sortConfig.key)?.label}
-                  </span>
-                )}
-                {sortConfig.direction === 'asc' ? <FiArrowUp /> : <FiArrowDown />}
+                <span className="sort-text">
+                  Sort
+                  {sortConfig.key && (
+                    <span className="sort-label">
+                      {sortConfig.key === 'name' && sortConfig.direction === 'asc' 
+                        ? "" 
+                        : `: ${sortOptions.find(opt => opt.value === sortConfig.key)?.label}`
+                      }
+                    </span>
+                  )}
+                </span>
+                {sortConfig.key && sortConfig.key === 'name' && sortConfig.direction === 'asc' ? (
+                  <FiArrowDown style={{ opacity: 0.5 }} />
+                ) : sortConfig.key ? (
+                  sortConfig.direction === 'asc' ? <FiArrowUp /> : <FiArrowDown />
+                ) : null}
                 {isSortActive && !sortOpen && <span className="active-indicator"></span>}
               </button>
 
@@ -519,7 +609,6 @@ function Dashboard() {
           {formOpen && (
             <div className="modal-overlay">
               <div className="modal-content">
-
                 <MemberForm
                   form={form}
                   setForm={setForm}
@@ -549,7 +638,7 @@ function Dashboard() {
             )}
           </div>
 
-          {/* Members Grid - SIMPLIFIED to show only role, name, ID, and career */}
+          {/* Members Grid */}
           <div className="members-grid-container">
             {sortedAndFilteredMembers.length === 0 ? (
               <div className="no-members">No members found.</div>
@@ -619,4 +708,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default MemberDashboard;

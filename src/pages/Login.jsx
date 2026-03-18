@@ -22,7 +22,7 @@ function Login() {
       );
 
       localStorage.setItem("token", res.data.token);
-      navigate("/dashboard");
+      navigate("/memberdashboard");
     } catch (err) {
       alert("Invalid credentials");
     } finally {

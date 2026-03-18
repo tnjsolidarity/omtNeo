@@ -1,0 +1,211 @@
+/* ProjectDashboard.css - Only project-specific styles */
+
+/* ===== PROJECTS GRID ===== */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.project-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.project-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.project-title-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.project-id-badge {
+  background-color: #e9ecef;
+  color: #495057;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  font-family: monospace;
+  border: 1px solid #dee2e6;
+}
+
+.project-name {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+  flex: 1;
+}
+
+.project-badges {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.project-status,
+.project-priority {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Status colors */
+.status-planning { background: #e3f2fd; color: #1976d2; }
+.status-progress { background: #fff3e0; color: #f57c00; }
+.status-hold { background: #ffebee; color: #c62828; }
+.status-completed { background: #e8f5e8; color: #2e7d32; }
+.status-cancelled { background: #f5f5f5; color: #616161; }
+
+/* Priority colors */
+.priority-low { background: #e8f5e8; color: #2e7d32; }
+.priority-medium { background: #fff3e0; color: #f57c00; }
+.priority-high { background: #ffebee; color: #c62828; }
+.priority-critical { background: #fce4ec; color: #c2185b; }
+
+.project-description {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  overflow: hidden;
+  white-space: nowrap; /* single-line fallback */
+}
+
+.project-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9rem;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.project-detail {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #333;
+  font-weight: 400;
+}
+
+.project-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.project-card-actions button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.project-card-actions .edit-btn {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.project-card-actions .edit-btn:hover {
+  background-color: #32408f;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(63, 81, 181, 0.3);
+}
+
+.project-card-actions .delete-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.project-card-actions .delete-btn:hover:not(:disabled) {
+  background-color: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+}
+
+.project-card-actions .delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.no-projects {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 1.1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* ===== MODAL STYLES ===== */
+.modal-content.project-form-modal {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ===== RESPONSIVE STYLES ===== */
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .project-badges {
+    margin-top: 5px;
+  }
+  
+  .project-card-actions {
+    flex-direction: column;
+  }
+  
+  .project-card-actions button {
+    width: 100%;
+  }
+}

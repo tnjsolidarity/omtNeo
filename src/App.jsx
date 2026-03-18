@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import MemberDetail from "./pages/MemberDetail";
+import MemberDashboard from "./pages/Member/MemberDashboard";
+import ProjectDashboard from "./pages/Project/ProjectDashboard";
+import MemberDetail from "./pages/Member/MemberDetail";
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
@@ -12,20 +13,28 @@ function App() {
         <Route path="/" element={<Login />} />
 
         <Route
-          path="/dashboard"
+          path="/memberdashboard"
           element={
             <PrivateRoute>
-              <Dashboard />
+              <MemberDashboard />
             </PrivateRoute>
           }
         />
 
-        {/* NEW ROUTE */}
         <Route
           path="/members/:id"
           element={
             <PrivateRoute>
               <MemberDetail />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/projectdashboard"
+          element={
+            <PrivateRoute>
+              <ProjectDashboard />
             </PrivateRoute>
           }
         />
