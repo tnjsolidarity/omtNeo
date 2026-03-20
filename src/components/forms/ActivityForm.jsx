@@ -2,17 +2,9 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { FiX } from "react-icons/fi";
 import { getMembers } from "../../services/memberService";
-import "./ProjectForm.css";
+import "./ActivityForm.css";
 
 // Constants
-const STATUS_OPTIONS = [
-  { value: "Planning", label: "Planning" },
-  { value: "In Progress", label: "In Progress" },
-  { value: "On Hold", label: "On Hold" },
-  { value: "Completed", label: "Completed" },
-  { value: "Cancelled", label: "Cancelled" }
-];
-
 const PRIORITY_OPTIONS = [
   { value: "Low", label: "Low" },
   { value: "Medium", label: "Medium" },
@@ -31,7 +23,7 @@ const selectStyles = {
   })
 };
 
-function ProjectForm({
+function ActivityForm({
   form,
   setForm,
   handleSubmit,
@@ -42,11 +34,13 @@ function ProjectForm({
 }) {
   const [members, setMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Fetch members for project manager dropdown
+  // Fetch members for incharge dropdown
   useEffect(() => {
     const fetchMembers = async () => {
       setMembersLoading(true);
+      setError(null);
       try {
         const response = await getMembers();
         if (response?.data) {
@@ -60,6 +54,7 @@ function ProjectForm({
         }
       } catch (err) {
         console.error("Error fetching members:", err);
+        setError("Failed to load members. Please try again.");
       } finally {
         setMembersLoading(false);
       }
@@ -68,43 +63,27 @@ function ProjectForm({
     fetchMembers();
   }, []);
 
-  const selectedManager = members.find(m => m.value === form.projectManager);
+  const selectedIncharge = members.find(m => m.value === form.incharge);
 
   return (
-    <div className="project-form-container">
+    <div className="activity-form-container">
       <div className="form-header">
-        <h3>{editingId ? 'Edit Project' : 'Create New Project'}</h3>
+        <h3>{editingId ? 'Edit Activity' : 'Create New Activity'}</h3>
         <button className="form-close-btn" onClick={handleClose}>
           <FiX size={20} />
         </button>
       </div>
 
       <div className="form-section">
-        {/* Project Name */}
+        {/* Activity Name */}
         <div className="form-field">
-          <label>Project Name *</label>
+          <label>Activity Name *</label>
           <input
             type="text"
             value={form.name}
             onChange={(e) => setForm({...form, name: e.target.value})}
-            placeholder="Enter project name"
+            placeholder="Enter activity name"
             required
-          />
-        </div>
-
-        {/* Status Select */}
-        <div className="form-field">
-          <label>Status</label>
-          <Select
-            className="react-select-container"
-            classNamePrefix="react-select"
-            options={STATUS_OPTIONS}
-            value={STATUS_OPTIONS.find(s => s.value === form.status)}
-            onChange={(selected) => setForm({...form, status: selected.value})}
-            placeholder="Select status"
-            menuPortalTarget={document.body}
-            menuPosition="fixed"
-            styles={selectStyles}
           />
         </div>
 
@@ -144,22 +123,26 @@ function ProjectForm({
           />
         </div>
 
-        {/* Project Manager - Member Select */}
+        {/* Incharge - Member Select */}
         <div className="form-field">
-          <label>Project Manager</label>
-          <Select
-            className="react-select-container"
-            classNamePrefix="react-select"
-            options={members}
-            value={selectedManager}
-            onChange={(selected) => setForm({...form, projectManager: selected?.value || ""})}
-            placeholder={membersLoading ? "Loading members..." : "Select project manager"}
-            isClearable
-            isLoading={membersLoading}
-            menuPortalTarget={document.body}
-            menuPosition="fixed"
-            styles={selectStyles}
-          />
+          <label>Incharge</label>
+          {error ? (
+            <div className="error-message">{error}</div>
+          ) : (
+            <Select
+              className="react-select-container"
+              classNamePrefix="react-select"
+              options={members}
+              value={selectedIncharge}
+              onChange={(selected) => setForm({...form, incharge: selected?.value || ""})}
+              placeholder={membersLoading ? "Loading members..." : "Select incharge"}
+              isClearable
+              isLoading={membersLoading}
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
+              styles={selectStyles}
+            />
+          )}
         </div>
 
         {/* Description - Full Width */}
@@ -168,7 +151,7 @@ function ProjectForm({
           <textarea
             value={form.description}
             onChange={(e) => setForm({...form, description: e.target.value})}
-            placeholder="Enter project description"
+            placeholder="Enter activity description"
             rows="3"
           />
         </div>
@@ -184,7 +167,7 @@ function ProjectForm({
             onClick={handleSubmit}
             disabled={loading || !form.name}
           >
-            {loading ? "Saving..." : (editingId ? "Update Project" : "Create Project")}
+            {loading ? "Saving..." : (editingId ? "Update Activity" : "Create Activity")}
           </button>
         </div>
       </div>
@@ -192,4 +175,4 @@ function ProjectForm({
   );
 }
 
-export default ProjectForm;
+export default ActivityForm;

@@ -1,0 +1,351 @@
+/* ===== PROJECT DETAIL PAGE ===== */
+
+/* ===== CONTAINER ===== */
+.project-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ===== HEADER ===== */
+.project-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.back-btn {
+  height: 40px;
+  padding: 0 16px;
+  background: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: #32408f;
+  transform: translateY(-1px);
+}
+
+.project-actions-header {
+  display: flex;
+  gap: 12px;
+}
+
+.edit-project-btn,
+.delete-project-btn {
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.edit-project-btn {
+  background: #3f51b5;
+  color: white;
+}
+
+.edit-project-btn:hover {
+  background: #32408f;
+  transform: translateY(-1px);
+}
+
+.delete-project-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.delete-project-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+/* ===== PROJECT CARD ===== */
+.project-detail-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #3f51b5;
+}
+
+.project-detail-card.priority-critical { border-left-color: #c2185b; }
+.project-detail-card.priority-high { border-left-color: #c62828; }
+.project-detail-card.priority-medium { border-left-color: #f57c00; }
+.project-detail-card.priority-low { border-left-color: #2e7d32; }
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.project-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.project-title-section h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #2c3e50;
+}
+
+.project-id-badge-large {
+  background: #e9ecef;
+  color: #495057;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.project-status-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.status-badge-large,
+.priority-badge-large {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Status Colors */
+.status-badge-large.status-planning { background: #e3f2fd; color: #1976d2; }
+.status-badge-large.status-inprogress { background: #fff3e0; color: #f57c00; }
+.status-badge-large.status-onhold { background: #ffebee; color: #c62828; }
+.status-badge-large.status-completed { background: #e8f5e8; color: #2e7d32; }
+.status-badge-large.status-cancelled { background: #f5f5f5; color: #616161; }
+
+/* Priority Colors */
+.priority-badge-large.priority-low { background: #e8f5e8; color: #2e7d32; }
+.priority-badge-large.priority-medium { background: #fff3e0; color: #f57c00; }
+.priority-badge-large.priority-high { background: #ffebee; color: #c62828; }
+.priority-badge-large.priority-critical { background: #fce4ec; color: #c2185b; }
+
+.project-description-large {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.project-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.info-item {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.info-item label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #7f8c8d;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.info-item span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.project-timestamps {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+  font-size: 12px;
+  color: #95a5a6;
+}
+
+/* ===== ACTIVITIES SECTION ===== */
+.activities-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.activities-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.activities-header h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  color: #2c3e50;
+}
+
+.add-activity-btn {
+  background: #3f51b5;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.add-activity-btn:hover {
+  background: #32408f;
+  transform: translateY(-1px);
+}
+
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.no-activities {
+  text-align: center;
+  padding: 60px;
+  color: #95a5a6;
+  background: #f8f9fa;
+  border-radius: 8px;
+  grid-column: 1 / -1;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* ===== LOADING ===== */
+.project-detail-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3f51b5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .project-detail-container {
+    padding: 12px;
+  }
+  
+  .project-header {
+    flex-direction: column;
+  }
+  
+  .project-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .activities-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-detail-header {
+    flex-direction: column;
+  }
+  
+  .project-actions-header {
+    width: 100%;
+  }
+  
+  .edit-project-btn,
+  .delete-project-btn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .project-title-section h1 {
+    font-size: 22px;
+  }
+  
+  .project-id-badge-large {
+    font-size: 12px;
+  }
+}

@@ -3,15 +3,17 @@ import Login from "./pages/Login";
 import MemberDashboard from "./pages/Member/MemberDashboard";
 import ProjectDashboard from "./pages/Project/ProjectDashboard";
 import MemberDetail from "./pages/Member/MemberDetail";
+import ProjectDetail from "./pages/Project/ProjectDetail";
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-
+        {/* Public Routes */}
         <Route path="/" element={<Login />} />
 
+        {/* Protected Member Routes */}
         <Route
           path="/memberdashboard"
           element={
@@ -30,6 +32,7 @@ function App() {
           }
         />
 
+        {/* Protected Project Routes */}
         <Route
           path="/projectdashboard"
           element={
@@ -39,6 +42,14 @@ function App() {
           }
         />
 
+        <Route
+          path="/projects/:id"
+          element={
+            <PrivateRoute>
+              <ProjectDetail />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -7,27 +7,73 @@ import {
   deleteProject,
   updateProject,
 } from "../../services/projectService";
-import ProjectForm from "../../components/forms/ProjectForm"; // Import the new component
+import ProjectForm from "../../components/forms/ProjectForm";
 import "../../styles/ProjectDashboard.css";
+
+// Constants
+const STATUS_ORDER = {
+  'In Progress': 1,
+  'On Hold': 2,
+  'Planning': 3,
+  'Completed': 4,
+  'Cancelled': 5
+};
+
+const PRIORITY_ORDER = {
+  'Critical': 1,
+  'High': 2,
+  'Medium': 3,
+  'Low': 4
+};
+
+const STATUS_COLOR_MAP = {
+  'Planning': 'status-planning',
+  'In Progress': 'status-progress',
+  'On Hold': 'status-hold',
+  'Completed': 'status-completed',
+  'Cancelled': 'status-cancelled'
+};
+
+const PRIORITY_COLOR_MAP = {
+  'Low': 'priority-low',
+  'Medium': 'priority-medium',
+  'High': 'priority-high',
+  'Critical': 'priority-critical'
+};
+
+const SORT_OPTIONS = [
+  { value: 'name', label: 'Name' },
+  { value: 'status', label: 'Status' },
+  { value: 'priority', label: 'Priority' },
+  { value: 'projectId', label: 'Project ID' },
+  { value: 'projectManager', label: 'Manager' },
+  { value: 'startDate', label: 'Start Date' },
+  { value: 'endDate', label: 'End Date' },
+  { value: 'createdAt', label: 'Created Date' },
+  { value: 'updatedAt', label: 'Updated Date' },
+  { value: 'description', label: 'Description' }
+];
 
 function ProjectDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [dashboardDropdownOpen, setDashboardDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
   
+  // Refs
+  const dropdownRef = useRef(null);
+  const sortRef = useRef(null);
+  
+  // State
+  const [dashboardDropdownOpen, setDashboardDropdownOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOpen, setSortOpen] = useState(false);
-  const sortRef = useRef(null);
   const [sortConfig, setSortConfig] = useState({
     key: 'status',
     direction: 'asc'
   });
-
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -39,45 +85,20 @@ function ProjectDashboard() {
   });
   const [editingId, setEditingId] = useState(null);
 
-  // Sort options for the button display
-  const sortOptions = [
-    { value: 'name', label: 'Name' },
-    { value: 'status', label: 'Status' },
-    { value: 'priority', label: 'Priority' },
-    { value: 'projectId', label: 'Project ID' },
-    { value: 'projectManager', label: 'Manager' },
-    { value: 'startDate', label: 'Start Date' },
-    { value: 'endDate', label: 'End Date' },
-    { value: 'createdAt', label: 'Created Date' },
-    { value: 'updatedAt', label: 'Updated Date' },
-    { value: 'description', label: 'Description' }
-  ];
-
-  // Custom status order for sorting
-  const STATUS_ORDER = {
-    'In Progress': 1,
-    'On Hold': 2,
-    'Planning': 3,
-    'Completed': 4,
-    'Cancelled': 5
-  };
-
-  // Priority order for sorting
-  const PRIORITY_ORDER = {
-    'Critical': 1,
-    'High': 2,
-    'Medium': 3,
-    'Low': 4
-  };
-
+  // Handle click outside dropdown
   useEffect(() => {
-    function handleClickOutside(event) {
+    const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDashboardDropdownOpen(false);
       }
-    }
+    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Fetch projects on mount
+  useEffect(() => {
+    fetchProjects();
   }, []);
 
   const fetchProjects = async () => {
@@ -89,22 +110,14 @@ function ProjectDashboard() {
     }
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const payload = {
-        ...form
-      };
-
       if (editingId) {
-        await updateProject(editingId, payload);
+        await updateProject(editingId, form);
         setEditingId(null);
       } else {
-        await createProject(payload);
+        await createProject(form);
       }
 
       handleClear();
@@ -138,7 +151,9 @@ function ProjectDashboard() {
       status: project.status || "Planning",
       startDate: project.startDate ? project.startDate.split("T")[0] : "",
       endDate: project.endDate ? project.endDate.split("T")[0] : "",
-      projectManager: project.projectManager || "",
+      projectManager: typeof project.projectManager === 'object' 
+        ? project.projectManager._id 
+        : project.projectManager || "",
       priority: project.priority || "Medium"
     });
     setEditingId(project._id);
@@ -170,9 +185,7 @@ function ProjectDashboard() {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    if (e.target.value) {
-      scrollToTop();
-    }
+    if (e.target.value) scrollToTop();
   };
 
   const handleSortToggle = () => {
@@ -187,41 +200,39 @@ function ProjectDashboard() {
   };
 
   const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
+    setSortConfig({
+      key,
+      direction: sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+    });
   };
 
   const getSortedProjects = (projectsToSort) => {
     if (!sortConfig.key) return projectsToSort;
 
     return [...projectsToSort].sort((a, b) => {
-      // Handle sorting based on the selected key
+      // Status sorting (custom order)
       if (sortConfig.key === 'status') {
-        const statusA = STATUS_ORDER[a.status] || 999;
-        const statusB = STATUS_ORDER[b.status] || 999;
-        return sortConfig.direction === 'asc' ? statusA - statusB : statusB - statusA;
+        const orderA = STATUS_ORDER[a.status] || 999;
+        const orderB = STATUS_ORDER[b.status] || 999;
+        return sortConfig.direction === 'asc' ? orderA - orderB : orderB - orderA;
       }
       
+      // Priority sorting (custom order)
       if (sortConfig.key === 'priority') {
-        const priorityA = PRIORITY_ORDER[a.priority] || 999;
-        const priorityB = PRIORITY_ORDER[b.priority] || 999;
-        return sortConfig.direction === 'asc' ? priorityA - priorityB : priorityB - priorityA;
+        const orderA = PRIORITY_ORDER[a.priority] || 999;
+        const orderB = PRIORITY_ORDER[b.priority] || 999;
+        return sortConfig.direction === 'asc' ? orderA - orderB : orderB - orderA;
       }
       
-      // Handle date fields
-      if (sortConfig.key === 'startDate' || sortConfig.key === 'endDate' || 
-          sortConfig.key === 'createdAt' || sortConfig.key === 'updatedAt') {
+      // Date fields
+      if (['startDate', 'endDate', 'createdAt', 'updatedAt'].includes(sortConfig.key)) {
         const dateA = a[sortConfig.key] ? new Date(a[sortConfig.key]).getTime() : 0;
         const dateB = b[sortConfig.key] ? new Date(b[sortConfig.key]).getTime() : 0;
         return sortConfig.direction === 'asc' ? dateA - dateB : dateB - dateA;
       }
       
-      // Handle string fields
-      if (sortConfig.key === 'name' || sortConfig.key === 'projectManager' || 
-          sortConfig.key === 'projectId' || sortConfig.key === 'description') {
+      // String fields
+      if (['name', 'projectManager', 'projectId', 'description'].includes(sortConfig.key)) {
         const valA = (a[sortConfig.key] || '').toString().toLowerCase();
         const valB = (b[sortConfig.key] || '').toString().toLowerCase();
         
@@ -236,53 +247,37 @@ function ProjectDashboard() {
 
   const filteredProjects = projects.filter((project) => {
     const term = searchTerm.toLowerCase();
+    const managerName = typeof project.projectManager === 'object'
+      ? project.projectManager?.name || ''
+      : project.projectManager || '';
+    
     return (
       project.projectId?.toLowerCase().includes(term) ||
       project.name?.toLowerCase().includes(term) ||
       project.description?.toLowerCase().includes(term) ||
-      project.projectManager?.toLowerCase().includes(term)
+      managerName.toLowerCase().includes(term)
     );
   });
 
   const sortedProjects = getSortedProjects(filteredProjects);
-
-  // Check if sort is active (not default)
   const isSortActive = sortConfig.key !== 'status' || sortConfig.direction !== 'asc';
-
-  // Get status color class
-  const getStatusClass = (status) => {
-    const statusMap = {
-      'Planning': 'status-planning',
-      'In Progress': 'status-progress',
-      'On Hold': 'status-hold',
-      'Completed': 'status-completed',
-      'Cancelled': 'status-cancelled'
-    };
-    return statusMap[status] || 'status-planning';
-  };
-
-  // Get priority color class
-  const getPriorityClass = (priority) => {
-    const priorityMap = {
-      'Low': 'priority-low',
-      'Medium': 'priority-medium',
-      'High': 'priority-high',
-      'Critical': 'priority-critical'
-    };
-    return priorityMap[priority] || 'priority-medium';
-  };
-
   const isSearchActive = searchTerm !== "";
+
+  const getStatusClass = (status) => STATUS_COLOR_MAP[status] || 'status-planning';
+  const getPriorityClass = (priority) => PRIORITY_COLOR_MAP[priority] || 'priority-medium';
 
   const formatDate = (dateString) => {
     if (!dateString) return null;
-    
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  const getManagerDisplay = (manager) => {
+    if (!manager) return null;
+    return typeof manager === 'object' ? manager.name : manager;
   };
 
   return (
@@ -340,12 +335,9 @@ function ProjectDashboard() {
               >
                 <span className="sort-text">
                   Sort
-                  {sortConfig.key && (
+                  {sortConfig.key && sortConfig.key !== 'status' && (
                     <span className="sort-label">
-                      {sortConfig.key === 'status' && sortConfig.direction === 'asc' 
-                        ? "" 
-                        : `: ${sortOptions.find(opt => opt.value === sortConfig.key)?.label}`
-                      }
+                      : {SORT_OPTIONS.find(opt => opt.value === sortConfig.key)?.label}
                     </span>
                   )}
                 </span>
@@ -357,17 +349,11 @@ function ProjectDashboard() {
                 {isSortActive && !sortOpen && <span className="active-indicator"></span>}
               </button>
 
-              <button
-                className="action-btn logout-btn"
-                onClick={handleLogout}
-              >
+              <button className="action-btn logout-btn" onClick={handleLogout}>
                 Logout
               </button>
               
-              <button
-                className="action-btn add-btn"
-                onClick={() => setFormOpen(!formOpen)}
-              >
+              <button className="action-btn add-btn" onClick={() => setFormOpen(!formOpen)}>
                 <FiPlus size={18} />
                 {formOpen ? "Close Form" : "New Project"}
               </button>
@@ -377,7 +363,7 @@ function ProjectDashboard() {
 
         {/* Scrollable Content Area */}
         <div className="dashboard-content">
-          {/* Form Modal - Using the new ProjectForm component */}
+          {/* Form Modal */}
           {formOpen && (
             <div className="modal-overlay">
               <div className="modal-content project-form-modal">
@@ -400,7 +386,7 @@ function ProjectDashboard() {
               <div className="sort-group">
                 <label>Sort By</label>
                 <div className="sort-options-grid">
-                  {sortOptions.map((option) => (
+                  {SORT_OPTIONS.map((option) => (
                     <button
                       key={option.value}
                       className={`sort-option-btn ${sortConfig.key === option.value ? 'active' : ''}`}
@@ -434,7 +420,7 @@ function ProjectDashboard() {
             <span>Showing {sortedProjects.length} projects</span>
             {sortConfig.key && (
               <span className="current-sort">
-                Sorted by: {sortOptions.find(opt => opt.value === sortConfig.key)?.label} 
+                Sorted by: {SORT_OPTIONS.find(opt => opt.value === sortConfig.key)?.label} 
                 ({sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'})
               </span>
             )}
@@ -446,11 +432,7 @@ function ProjectDashboard() {
               <div className="no-projects">No projects found. Create your first project!</div>
             ) : (
               sortedProjects.map((project) => (
-                <Link
-                  to={`/projects/${project._id}`}
-                  className="project-card"
-                  key={project._id}
-                >
+                <Link to={`/projects/${project._id}`} className="project-card" key={project._id}>
                   <div className="project-card-header">
                     <div className="project-title-section">
                       <h3 className="project-name">{project.name}</h3>
@@ -476,25 +458,21 @@ function ProjectDashboard() {
                     {project.projectManager && (
                       <div className="project-detail">
                         <span className="detail-label">Manager:</span>
-                        <span className="detail-value">{project.projectManager}</span>
+                        <span className="detail-value">{getManagerDisplay(project.projectManager)}</span>
                       </div>
                     )}
                     
                     {project.startDate && (
                       <div className="project-detail">
                         <span className="detail-label">Start:</span>
-                        <span className="detail-value">
-                          {formatDate(project.startDate)}
-                        </span>
+                        <span className="detail-value">{formatDate(project.startDate)}</span>
                       </div>
                     )}
 
                     {project.endDate && (
                       <div className="project-detail">
                         <span className="detail-label">End:</span>
-                        <span className="detail-value">
-                          {formatDate(project.endDate)}
-                        </span>
+                        <span className="detail-value">{formatDate(project.endDate)}</span>
                       </div>
                     )}
                   </div>

@@ -1,19 +1,5 @@
-/* ===== PROJECT FORM ===== */
-
-/* ===== ANIMATIONS ===== */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===== MAIN CONTAINER ===== */
-.project-form-container {
+/* ===== ACTIVITY FORM CONTAINER ===== */
+.activity-form-container {
   background: white;
   border-radius: 12px;
   overflow: hidden;
@@ -21,7 +7,6 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.3s ease-out;
 }
 
 /* ===== FORM HEADER ===== */
@@ -32,9 +17,6 @@
   padding: 16px 24px;
   background: linear-gradient(135deg, #3f51b5, #5c6bc0);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 10;
   flex-shrink: 0;
 }
 
@@ -45,7 +27,6 @@
   color: white;
 }
 
-/* ===== CLOSE BUTTON ===== */
 .form-close-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
@@ -58,17 +39,11 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 0;
 }
 
 .form-close-btn:hover {
   background: #f44336;
   transform: rotate(90deg);
-  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
-}
-
-.form-close-btn:active {
-  transform: rotate(90deg) scale(0.95);
 }
 
 /* ===== FORM SECTION (SCROLLABLE) ===== */
@@ -79,7 +54,6 @@
   padding: 24px;
   background: white;
   overflow-y: auto;
-  overflow-x: hidden;
   flex: 1;
 }
 
@@ -100,11 +74,6 @@
 
 .form-section::-webkit-scrollbar-thumb:hover {
   background: #95a5a6;
-}
-
-.form-section {
-  scrollbar-width: thin;
-  scrollbar-color: #bdc3c7 #f1f1f1;
 }
 
 /* ===== FORM FIELDS ===== */
@@ -145,11 +114,6 @@
   box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
 }
 
-.form-field input:hover,
-.form-field textarea:hover {
-  border-color: #3f51b5;
-}
-
 .form-field textarea {
   resize: vertical;
   min-height: 80px;
@@ -185,15 +149,23 @@
   font-size: 14px !important;
 }
 
+/* ===== ERROR MESSAGE ===== */
+.error-message {
+  padding: 10px 12px;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 6px;
+  color: #c62828;
+  font-size: 13px;
+  text-align: center;
+}
+
 /* ===== FORM BUTTONS ===== */
 .form-buttons {
   display: flex;
   gap: 12px;
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 8px;
   grid-column: span 2;
-  background: white;
-  border-top: 1px solid #eef2f6;
 }
 
 .primary-btn,
@@ -205,11 +177,11 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: none;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
-  border: none;
 }
 
 .primary-btn {
@@ -236,12 +208,6 @@
 .clear-btn:hover {
   background-color: #5a6268;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
-}
-
-.primary-btn:active,
-.clear-btn:active {
-  transform: translateY(0);
 }
 
 /* ===== RESPONSIVE ===== */
@@ -271,19 +237,12 @@
 
   .form-buttons {
     flex-direction: column;
-    gap: 8px;
     grid-column: span 1;
-    margin-top: 16px;
-    padding-top: 16px;
   }
 
   .primary-btn,
   .clear-btn {
     width: 100%;
-  }
-
-  .form-field label {
-    font-size: 12px;
   }
 }
 
@@ -303,8 +262,8 @@
     font-size: 13px;
   }
 
-  .form-buttons {
-    margin-top: 12px;
-    padding-top: 12px;
+  .error-message {
+    font-size: 12px;
+    padding: 8px 10px;
   }
 }

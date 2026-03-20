@@ -1,11 +1,11 @@
 import axios from "axios";
 
-// Create dedicated API instance for projects
+// Use Vite environment variable
 const API = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api/projects`,
 });
 
-// Attach token to every request
+// Add token to all requests
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -14,7 +14,7 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-// CRUD operations
+// Project CRUD operations
 export const getProjects = () => API.get("/");
 export const getProject = (id) => API.get(`/${id}`);
 export const createProject = (data) => API.post("/", data);
