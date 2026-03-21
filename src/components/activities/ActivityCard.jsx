@@ -11,6 +11,16 @@ function ActivityCard({ activity, onEdit, onDelete }) {
     'Critical': 'priority-critical'
   };
 
+  const statusMap = {
+    'Planning': 'status-planning',
+    'In Progress': 'status-progress',
+    'On Hold': 'status-hold',
+    'Completed': 'status-completed',
+    'Cancelled': 'status-cancelled'
+  };
+
+  const getStatusClass = (status) => statusMap[status] || 'status-planning';
+
   const getPriorityClass = (priority) => priorityMap[priority] || 'priority-medium';
   
   const getPriorityIcon = () => <FiFlag className="priority-icon" />;
@@ -44,6 +54,9 @@ function ActivityCard({ activity, onEdit, onDelete }) {
         <span className={`activity-priority ${getPriorityClass(activity.priority)}`}>
           {getPriorityIcon()}
           {activity.priority}
+        </span>
+        <span className={`activity-status ${getStatusClass(activity.status)}`}>
+          {activity.status}
         </span>
       </div>
 

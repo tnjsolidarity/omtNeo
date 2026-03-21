@@ -154,6 +154,48 @@
   transform: translateY(-1px);
 }
 
+/* Base status style */
+.activity-status,
+.project-status,
+.status-badge-large {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+/* Planning */
+.status-planning {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* In Progress */
+.status-progress {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* On Hold */
+.status-hold {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Completed */
+.status-completed {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* Cancelled */
+.status-cancelled {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .activity-card-header {

@@ -16,7 +16,8 @@ const INITIAL_PROJECT_FORM = {
   startDate: "",
   endDate: "",
   projectManager: "",
-  priority: "Medium"
+  priority: "Medium",
+  status: "Planning"
 };
 
 const INITIAL_ACTIVITY_FORM = {
@@ -132,6 +133,7 @@ function ProjectDetail() {
       name: activity.name || "",
       description: activity.description || "",
       priority: activity.priority || "Medium",
+      status: activity.status || "Planning",
       startDate: activity.startDate ? activity.startDate.split("T")[0] : "",
       endDate: activity.endDate ? activity.endDate.split("T")[0] : "",
       incharge: activity.incharge?._id || activity.incharge || ""

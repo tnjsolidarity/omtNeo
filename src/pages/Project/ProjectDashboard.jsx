@@ -449,6 +449,18 @@ function ProjectDashboard() {
                       </span>
                     </div>
                   </div>
+
+                  <div className="project-progress">
+                    <div className="progress-bar">
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${project.progress || 0}%` }}
+                      ></div>
+                    </div>
+                    <span className="progress-text">
+                      {project.progress || 0}% Completed
+                    </span>
+                  </div>
                   
                   <p className="project-description">
                     {project.description || "No description provided"}

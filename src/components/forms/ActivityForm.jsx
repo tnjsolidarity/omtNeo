@@ -12,6 +12,14 @@ const PRIORITY_OPTIONS = [
   { value: "Critical", label: "Critical" }
 ];
 
+const STATUS_OPTIONS = [
+  { value: "Planning", label: "Planning" },
+  { value: "In Progress", label: "In Progress" },
+  { value: "On Hold", label: "On Hold" },
+  { value: "Completed", label: "Completed" },
+  { value: "Cancelled", label: "Cancelled" }
+];
+
 // Select styles
 const selectStyles = {
   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -97,6 +105,21 @@ function ActivityForm({
             value={PRIORITY_OPTIONS.find(p => p.value === form.priority)}
             onChange={(selected) => setForm({...form, priority: selected.value})}
             placeholder="Select priority"
+            menuPortalTarget={document.body}
+            menuPosition="fixed"
+            styles={selectStyles}
+          />
+        </div>
+
+        <div className="form-field">
+          <label>Status</label>
+          <Select
+            className="react-select-container"
+            classNamePrefix="react-select"
+            options={STATUS_OPTIONS}
+            value={STATUS_OPTIONS.find(s => s.value === form.status)}
+            onChange={(selected) => setForm({...form, status: selected.value})}
+            placeholder="Select status"
             menuPortalTarget={document.body}
             menuPosition="fixed"
             styles={selectStyles}
