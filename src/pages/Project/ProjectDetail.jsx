@@ -17,7 +17,6 @@ const INITIAL_PROJECT_FORM = {
   endDate: "",
   projectManager: "",
   priority: "Medium",
-  status: "Planning"
 };
 
 const INITIAL_ACTIVITY_FORM = {

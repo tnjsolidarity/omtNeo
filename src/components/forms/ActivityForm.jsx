@@ -20,17 +20,6 @@ const STATUS_OPTIONS = [
   { value: "Cancelled", label: "Cancelled" }
 ];
 
-// Select styles
-const selectStyles = {
-  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-  control: (base) => ({ 
-    ...base, 
-    minHeight: '40px',
-    borderColor: '#dcdfe6',
-    '&:hover': { borderColor: '#3f51b5' }
-  })
-};
-
 function ActivityForm({
   form,
   setForm,
@@ -43,6 +32,106 @@ function ActivityForm({
   const [members, setMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // State for formatted date displays
+  const [formattedStartDate, setFormattedStartDate] = useState("");
+  const [formattedEndDate, setFormattedEndDate] = useState("");
+
+  // Format date from YYYY-MM-DD to DD/MM/YYYY for display
+  const formatDateForDisplay = (dateString) => {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-");
+    if (!year || !month || !day) return "";
+    return `${day}/${month}/${year}`;
+  };
+
+  // Parse date from DD/MM/YYYY to YYYY-MM-DD for storage
+  const parseDateForStorage = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("/");
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      if (day && month && year && day.length === 2 && month.length === 2 && year.length === 4) {
+        return `${year}-${month}-${day}`;
+      }
+    }
+    return "";
+  };
+
+  // Handle start date change with formatting
+  const handleStartDateChange = (e) => {
+    let inputValue = e.target.value;
+    let cleaned = inputValue.replace(/\D/g, "");
+    
+    if (cleaned.length >= 3) {
+      cleaned = cleaned.slice(0, 2) + "/" + cleaned.slice(2);
+    }
+    if (cleaned.length >= 6) {
+      cleaned = cleaned.slice(0, 5) + "/" + cleaned.slice(5, 9);
+    }
+    
+    if (cleaned.length > 10) {
+      cleaned = cleaned.slice(0, 10);
+    }
+    
+    setFormattedStartDate(cleaned);
+    
+    if (cleaned.length === 10) {
+      const storageDate = parseDateForStorage(cleaned);
+      if (storageDate) {
+        setForm({ ...form, startDate: storageDate });
+      } else {
+        setForm({ ...form, startDate: "" });
+      }
+    } else {
+      setForm({ ...form, startDate: "" });
+    }
+  };
+
+  // Handle end date change with formatting
+  const handleEndDateChange = (e) => {
+    let inputValue = e.target.value;
+    let cleaned = inputValue.replace(/\D/g, "");
+    
+    if (cleaned.length >= 3) {
+      cleaned = cleaned.slice(0, 2) + "/" + cleaned.slice(2);
+    }
+    if (cleaned.length >= 6) {
+      cleaned = cleaned.slice(0, 5) + "/" + cleaned.slice(5, 9);
+    }
+    
+    if (cleaned.length > 10) {
+      cleaned = cleaned.slice(0, 10);
+    }
+    
+    setFormattedEndDate(cleaned);
+    
+    if (cleaned.length === 10) {
+      const storageDate = parseDateForStorage(cleaned);
+      if (storageDate) {
+        setForm({ ...form, endDate: storageDate });
+      } else {
+        setForm({ ...form, endDate: "" });
+      }
+    } else {
+      setForm({ ...form, endDate: "" });
+    }
+  };
+
+  // Initialize formatted dates when form dates change from props
+  useEffect(() => {
+    if (form.startDate) {
+      setFormattedStartDate(formatDateForDisplay(form.startDate));
+    } else {
+      setFormattedStartDate("");
+    }
+    
+    if (form.endDate) {
+      setFormattedEndDate(formatDateForDisplay(form.endDate));
+    } else {
+      setFormattedEndDate("");
+    }
+  }, [form.startDate, form.endDate]);
 
   // Fetch members for incharge dropdown
   useEffect(() => {
@@ -85,10 +174,10 @@ function ActivityForm({
       <div className="form-section">
         {/* Activity Name */}
         <div className="form-field">
-          <label>Activity Name *</label>
+          <label className="required">Activity Name</label>
           <input
             type="text"
-            value={form.name}
+            value={form.name || ""}
             onChange={(e) => setForm({...form, name: e.target.value})}
             placeholder="Enter activity name"
             required
@@ -103,14 +192,14 @@ function ActivityForm({
             classNamePrefix="react-select"
             options={PRIORITY_OPTIONS}
             value={PRIORITY_OPTIONS.find(p => p.value === form.priority)}
-            onChange={(selected) => setForm({...form, priority: selected.value})}
+            onChange={(selected) => setForm({...form, priority: selected?.value || "Medium"})}
             placeholder="Select priority"
             menuPortalTarget={document.body}
             menuPosition="fixed"
-            styles={selectStyles}
           />
         </div>
 
+        {/* Status Select */}
         <div className="form-field">
           <label>Status</label>
           <Select
@@ -118,32 +207,41 @@ function ActivityForm({
             classNamePrefix="react-select"
             options={STATUS_OPTIONS}
             value={STATUS_OPTIONS.find(s => s.value === form.status)}
-            onChange={(selected) => setForm({...form, status: selected.value})}
+            onChange={(selected) => setForm({...form, status: selected?.value || "Planning"})}
             placeholder="Select status"
             menuPortalTarget={document.body}
             menuPosition="fixed"
-            styles={selectStyles}
           />
         </div>
 
-        {/* Start Date */}
+        {/* Start Date with DD/MM/YYYY format */}
         <div className="form-field">
           <label>Start Date</label>
-          <input
-            type="date"
-            value={form.startDate}
-            onChange={(e) => setForm({...form, startDate: e.target.value})}
-          />
+          <div className="date-field-container">
+            <input
+              type="text"
+              placeholder="DD/MM/YYYY"
+              value={formattedStartDate}
+              onChange={handleStartDateChange}
+              maxLength={10}
+              className="date-input"
+            />
+          </div>
         </div>
 
-        {/* End Date */}
+        {/* End Date with DD/MM/YYYY format */}
         <div className="form-field">
           <label>End Date</label>
-          <input
-            type="date"
-            value={form.endDate}
-            onChange={(e) => setForm({...form, endDate: e.target.value})}
-          />
+          <div className="date-field-container">
+            <input
+              type="text"
+              placeholder="DD/MM/YYYY"
+              value={formattedEndDate}
+              onChange={handleEndDateChange}
+              maxLength={10}
+              className="date-input"
+            />
+          </div>
         </div>
 
         {/* Incharge - Member Select */}
@@ -163,7 +261,6 @@ function ActivityForm({
               isLoading={membersLoading}
               menuPortalTarget={document.body}
               menuPosition="fixed"
-              styles={selectStyles}
             />
           )}
         </div>
@@ -172,7 +269,7 @@ function ActivityForm({
         <div className="form-field full-width">
           <label>Description</label>
           <textarea
-            value={form.description}
+            value={form.description || ""}
             onChange={(e) => setForm({...form, description: e.target.value})}
             placeholder="Enter activity description"
             rows="3"

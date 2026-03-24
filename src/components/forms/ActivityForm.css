@@ -1,4 +1,18 @@
-/* ===== ACTIVITY FORM CONTAINER ===== */
+/* ===== ACTIVITY FORM ===== */
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== MAIN CONTAINER ===== */
 .activity-form-container {
   background: white;
   border-radius: 12px;
@@ -7,6 +21,7 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  animation: slideIn 0.3s ease-out;
 }
 
 /* ===== FORM HEADER ===== */
@@ -17,6 +32,9 @@
   padding: 16px 24px;
   background: linear-gradient(135deg, #3f51b5, #5c6bc0);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
   flex-shrink: 0;
 }
 
@@ -27,6 +45,7 @@
   color: white;
 }
 
+/* ===== CLOSE BUTTON ===== */
 .form-close-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
@@ -39,11 +58,17 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  padding: 0;
 }
 
 .form-close-btn:hover {
   background: #f44336;
   transform: rotate(90deg);
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.form-close-btn:active {
+  transform: rotate(90deg) scale(0.95);
 }
 
 /* ===== FORM SECTION (SCROLLABLE) ===== */
@@ -54,6 +79,7 @@
   padding: 24px;
   background: white;
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
 }
 
@@ -76,6 +102,11 @@
   background: #95a5a6;
 }
 
+.form-section {
+  scrollbar-width: thin;
+  scrollbar-color: #bdc3c7 #f1f1f1;
+}
+
 /* ===== FORM FIELDS ===== */
 .form-field {
   display: flex;
@@ -94,6 +125,13 @@
   grid-column: span 2;
 }
 
+/* Required field indicator */
+.form-field label.required::after {
+  content: "*";
+  color: #dc3545;
+  margin-left: 4px;
+}
+
 /* ===== INPUT STYLES ===== */
 .form-field input,
 .form-field textarea {
@@ -107,6 +145,10 @@
   box-sizing: border-box;
 }
 
+.form-field input {
+  height: 40px;
+}
+
 .form-field input:focus,
 .form-field textarea:focus {
   outline: none;
@@ -114,9 +156,45 @@
   box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
 }
 
+.form-field input:hover,
+.form-field textarea:hover {
+  border-color: #3f51b5;
+}
+
 .form-field textarea {
   resize: vertical;
   min-height: 80px;
+}
+
+/* ===== DATE FIELD STYLES ===== */
+.date-field-container {
+  position: relative;
+  width: 100%;
+}
+
+.date-input {
+  width: 100%;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+  padding-right: 32px !important;
+}
+
+.date-input::placeholder {
+  color: #adb5bd;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+/* Calendar icon for date fields */
+.date-field-container::before {
+  content: "📅";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 14px;
+  opacity: 0.5;
 }
 
 /* ===== REACT SELECT STYLES ===== */
@@ -149,6 +227,10 @@
   font-size: 14px !important;
 }
 
+.react-select__menu {
+  z-index: 9999 !important;
+}
+
 /* ===== ERROR MESSAGE ===== */
 .error-message {
   padding: 10px 12px;
@@ -164,8 +246,11 @@
 .form-buttons {
   display: flex;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 20px;
+  padding-top: 20px;
   grid-column: span 2;
+  background: white;
+  border-top: 1px solid #eef2f6;
 }
 
 .primary-btn,
@@ -177,11 +262,11 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: none;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 40px;
+  border: none;
 }
 
 .primary-btn {
@@ -208,9 +293,17 @@
 .clear-btn:hover {
   background-color: #5a6268;
   transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
 }
 
-/* ===== RESPONSIVE ===== */
+.primary-btn:active,
+.clear-btn:active {
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet and below */
 @media (max-width: 768px) {
   .form-header {
     padding: 12px 16px;
@@ -237,15 +330,41 @@
 
   .form-buttons {
     flex-direction: column;
+    gap: 8px;
     grid-column: span 1;
+    margin-top: 16px;
+    padding-top: 16px;
   }
 
   .primary-btn,
   .clear-btn {
     width: 100%;
   }
+
+  .form-field label {
+    font-size: 12px;
+  }
+
+  .react-select__control {
+    min-height: 38px !important;
+  }
+
+  .date-field-container::before {
+    right: 10px;
+    font-size: 12px;
+  }
+
+  .date-input {
+    padding-right: 28px !important;
+  }
+
+  .error-message {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
 }
 
+/* Mobile */
 @media (max-width: 480px) {
   .form-header {
     padding: 10px 12px;
@@ -262,8 +381,12 @@
     font-size: 13px;
   }
 
-  .error-message {
-    font-size: 12px;
-    padding: 8px 10px;
+  .form-field input {
+    height: 38px;
+  }
+
+  .form-buttons {
+    margin-top: 12px;
+    padding-top: 12px;
   }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { FiUserPlus, FiArrowUp, FiArrowDown, FiChevronDown } from "react-icons/fi";
+import { FiUserPlus, FiArrowUp, FiArrowDown, FiChevronDown, FiPhone } from "react-icons/fi";
 import Select from "react-select";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -189,7 +189,7 @@ function MemberDashboard() {
       }
 
       handleClear();
-      setFormOpen(false);   // ✅ CLOSE MODAL HERE
+      setFormOpen(false);
       await fetchMembers();
 
     } catch (err) {
@@ -251,6 +251,23 @@ function MemberDashboard() {
     } finally {
       setDeletingId(null);
     }
+  };
+
+  // Handle call functionality
+  const handleCall = (phoneNumber) => {
+    if (!phoneNumber) {
+      alert("No phone number available for this member");
+      return;
+    }
+    
+    // Format phone number (remove any spaces or special characters if needed)
+    const formattedNumber = phoneNumber.replace(/\s/g, '');
+    
+    // Create tel: link for mobile devices
+    const telLink = `tel:${formattedNumber}`;
+    
+    // Open the call dialer
+    window.location.href = telLink;
   };
 
   const handleLogout = () => {
@@ -369,6 +386,7 @@ function MemberDashboard() {
     const matchesSearch =
       member.name?.toLowerCase().includes(term) ||
       member.memberId?.toLowerCase().includes(term) ||
+      member.phone?.toLowerCase().includes(term) ||
       member.career?.some((c) => String(c).toLowerCase().includes(term));
 
     const matchesRole = roleFilter ? member.role === roleFilter : true;
@@ -452,7 +470,7 @@ function MemberDashboard() {
                 <input
                   ref={searchRef}
                   type="text"
-                  placeholder="Search by name, ID, or career..."
+                  placeholder="Search by name, ID, phone, or career..."
                   value={searchTerm}
                   onChange={handleSearchChange}
                   className={`search-input ${isSearchActive ? 'active' : ''}`}
@@ -674,6 +692,22 @@ function MemberDashboard() {
                     </div>
 
                     <div className="member-simple-actions">
+                      {/* Call Button */}
+                      {member.phone && (
+                        <button
+                          className="call-btn"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleCall(member.phone);
+                          }}
+                          title={`Call ${member.name}`}
+                        >
+                          <FiPhone size={16} />
+                          Call
+                        </button>
+                      )}
+                      
                       <button
                         className="edit-btn"
                         onClick={(e) => {

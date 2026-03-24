@@ -125,6 +125,13 @@
   grid-column: span 2;
 }
 
+/* Required field indicator */
+.form-field label.required::after {
+  content: "*";
+  color: #dc3545;
+  margin-left: 4px;
+}
+
 /* ===== INPUT STYLES ===== */
 .form-field input,
 .form-field textarea {
@@ -136,6 +143,10 @@
   font-family: inherit;
   width: 100%;
   box-sizing: border-box;
+}
+
+.form-field input {
+  height: 40px;
 }
 
 .form-field input:focus,
@@ -153,6 +164,37 @@
 .form-field textarea {
   resize: vertical;
   min-height: 80px;
+}
+
+/* ===== DATE FIELD STYLES ===== */
+.date-field-container {
+  position: relative;
+  width: 100%;
+}
+
+.date-input {
+  width: 100%;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+  padding-right: 32px !important;
+}
+
+.date-input::placeholder {
+  color: #adb5bd;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+/* Calendar icon for date fields */
+.date-field-container::before {
+  content: "📅";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 14px;
+  opacity: 0.5;
 }
 
 /* ===== REACT SELECT STYLES ===== */
@@ -183,6 +225,10 @@
 .react-select__single-value,
 .react-select__input-container {
   font-size: 14px !important;
+}
+
+.react-select__menu {
+  z-index: 9999 !important;
 }
 
 /* ===== FORM BUTTONS ===== */
@@ -244,7 +290,9 @@
   transform: translateY(0);
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet and below */
 @media (max-width: 768px) {
   .form-header {
     padding: 12px 16px;
@@ -285,8 +333,22 @@
   .form-field label {
     font-size: 12px;
   }
+
+  .react-select__control {
+    min-height: 38px !important;
+  }
+
+  .date-field-container::before {
+    right: 10px;
+    font-size: 12px;
+  }
+
+  .date-input {
+    padding-right: 28px !important;
+  }
 }
 
+/* Mobile */
 @media (max-width: 480px) {
   .form-header {
     padding: 10px 12px;
@@ -301,6 +363,10 @@
   .form-field textarea {
     padding: 8px 10px;
     font-size: 13px;
+  }
+
+  .form-field input {
+    height: 38px;
   }
 
   .form-buttons {

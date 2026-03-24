@@ -772,6 +772,48 @@
   transform: none;
   box-shadow: none;
 }
+/* Add to your MemberDashboard.css */
+
+/* Call Button Styles */
+.call-btn {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 60px;
+  justify-content: center;
+}
+
+.call-btn:hover {
+  background: linear-gradient(135deg, #45a049, #3d8b40);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.call-btn:active {
+  transform: translateY(0);
+}
+
+/* Adjust action buttons layout */
+.member-simple-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.member-simple-actions button {
+  flex: 1;
+  min-width: 70px;
+}
 
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1024px) {
@@ -900,5 +942,23 @@
   .member-simple-actions button {
     padding: 5px 6px;
     font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .call-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .member-simple-actions {
+    flex-direction: column;
+  }
+  
+  .member-simple-actions button {
+    width: 100%;
   }
 }
