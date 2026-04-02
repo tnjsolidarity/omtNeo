@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { FiX } from "react-icons/fi";
 import { getMembers } from "../../services/memberService";
-import "./ActivityForm.css";
+import "./EventForm.css";
 
 // Constants
 const PRIORITY_OPTIONS = [
@@ -20,7 +20,23 @@ const STATUS_OPTIONS = [
   { value: "Cancelled", label: "Cancelled" }
 ];
 
-function ActivityForm({
+// Place options - you can customize these or fetch from API
+const PLACE_OPTIONS = [
+  { value: "People Welfare Center", label: "People Welfare Center" },
+  { value: "MRG Engineering", label: "MRG Engineering" },
+  { value: "Makka Masjid - Eeswari Nagar", label: "Makka Masjid - Eeswari Nagar" },
+  { value: "Attar Mohalla Masjid", label: "Attar Mohalla Masjid" },
+  { value: "Kuppatheru Masjid", label: "Kuppatheru Masjid" },
+  { value: "Royal School", label: "Royal School" },
+  { value: "Sri Besant Lodge", label: "Sri Besant Lodge" },
+  { value: "Aringar Anna Marriage Hall", label: "Aringar Anna Marriage Hall" },
+  { value: "Jupiter Theater Main Road", label: "(Jupiter Theater-Burma Bazar-Anna Road) Meeting Point" },
+  { value: "Sai Veni Sports Academy", label: "Sai Veni Sports Academy" },
+  { value: "ALMS Jamia Masjid - Athirambattinam", label: "ALMS Jamia Masjid - Athirambattinam" },
+  { value: "JIH Office - Perambur", label: "JIH Office - Perambur" },
+];
+
+function EventForm({
   form,
   setForm,
   handleSubmit,
@@ -133,7 +149,7 @@ function ActivityForm({
     }
   }, [form.startDate, form.endDate]);
 
-  // Fetch members for incharge dropdown
+  // Fetch members for assignedTo dropdown
   useEffect(() => {
     const fetchMembers = async () => {
       setMembersLoading(true);
@@ -160,7 +176,8 @@ function ActivityForm({
     fetchMembers();
   }, []);
 
-  const selectedIncharge = members.find(m => m.value === form.incharge);
+  const selectedAssignedTo = members.find(m => m.value === form.assignedTo);
+  const selectedPlace = PLACE_OPTIONS.find(p => p.value === form.place);
 
   // Custom styles for react-select to ensure dropdown appears
   const customSelectStyles = {
@@ -169,23 +186,23 @@ function ActivityForm({
   };
 
   return (
-    <div className="activity-form-container">
+    <div className="event-form-container">
       <div className="form-header">
-        <h3>{editingId ? 'Edit Activity' : 'Create New Activity'}</h3>
+        <h3>{editingId ? 'Edit Event' : 'Create New Event'}</h3>
         <button className="form-close-btn" onClick={handleClose} aria-label="Close form">
           <FiX size={20} />
         </button>
       </div>
 
       <div className="form-section">
-        {/* Activity Name */}
+        {/* Event Name */}
         <div className="form-field full-width">
-          <label className="required">Activity Name</label>
+          <label className="required">Event Name</label>
           <input
             type="text"
             value={form.name || ""}
             onChange={(e) => setForm({...form, name: e.target.value})}
-            placeholder="Enter activity name"
+            placeholder="Enter event name"
             required
           />
         </div>
@@ -214,6 +231,21 @@ function ActivityForm({
             value={STATUS_OPTIONS.find(s => s.value === form.status)}
             onChange={(selected) => setForm({...form, status: selected?.value || "Planning"})}
             placeholder="Select status"
+            styles={customSelectStyles}
+          />
+        </div>
+
+        {/* Place Select - NEW DROPDOWN */}
+        <div className="form-field">
+          <label>Place</label>
+          <Select
+            className="react-select-container"
+            classNamePrefix="react-select"
+            options={PLACE_OPTIONS}
+            value={selectedPlace}
+            onChange={(selected) => setForm({...form, place: selected?.value || ""})}
+            placeholder="Select or search place"
+            isClearable
             styles={customSelectStyles}
           />
         </div>
@@ -248,9 +280,9 @@ function ActivityForm({
           </div>
         </div>
 
-        {/* Incharge - Member Select */}
+        {/* Assigned To - Member Select */}
         <div className="form-field full-width">
-          <label>Incharge</label>
+          <label>Assigned To</label>
           {error ? (
             <div className="error-message">{error}</div>
           ) : (
@@ -258,9 +290,9 @@ function ActivityForm({
               className="react-select-container"
               classNamePrefix="react-select"
               options={members}
-              value={selectedIncharge}
-              onChange={(selected) => setForm({...form, incharge: selected?.value || ""})}
-              placeholder={membersLoading ? "Loading members..." : "Select incharge"}
+              value={selectedAssignedTo}
+              onChange={(selected) => setForm({...form, assignedTo: selected?.value || ""})}
+              placeholder={membersLoading ? "Loading members..." : "Select assignee"}
               isClearable
               isLoading={membersLoading}
               styles={customSelectStyles}
@@ -274,7 +306,7 @@ function ActivityForm({
           <textarea
             value={form.description || ""}
             onChange={(e) => setForm({...form, description: e.target.value})}
-            placeholder="Enter activity description"
+            placeholder="Enter event description"
             rows="3"
           />
         </div>
@@ -290,7 +322,7 @@ function ActivityForm({
             onClick={handleSubmit}
             disabled={loading || !form.name}
           >
-            {loading ? "Saving..." : (editingId ? "Update Activity" : "Create Activity")}
+            {loading ? "Saving..." : (editingId ? "Update Event" : "Create Event")}
           </button>
         </div>
       </div>
@@ -298,4 +330,4 @@ function ActivityForm({
   );
 }
 
-export default ActivityForm;
+export default EventForm;

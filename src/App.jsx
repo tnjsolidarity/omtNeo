@@ -5,6 +5,7 @@ import ProjectDashboard from "./pages/Project/ProjectDashboard";
 import MemberDetail from "./pages/Member/MemberDetail";
 import ProjectDetail from "./pages/Project/ProjectDetail";
 import PrivateRoute from "./components/PrivateRoute";
+import ActivityDetail from "./pages/Activity/ActivityDetail";
 
 function App() {
   return (
@@ -49,6 +50,14 @@ function App() {
               <ProjectDetail />
             </PrivateRoute>
           }
+        />
+        <Route 
+          path="/projects/:projectId/activities/:activityId"
+          element={
+            <PrivateRoute>
+              <ActivityDetail />
+            </PrivateRoute>
+          } 
         />
       </Routes>
     </BrowserRouter>

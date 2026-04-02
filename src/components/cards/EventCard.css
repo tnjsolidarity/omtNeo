@@ -1,0 +1,215 @@
+/* ===== EVENT CARD ===== */
+.event-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Priority Borders */
+.event-card.priority-critical { border-left: 4px solid #c2185b; }
+.event-card.priority-high { border-left: 4px solid #dc2626; }
+.event-card.priority-medium { border-left: 4px solid #f59e0b; }
+.event-card.priority-low { border-left: 4px solid #10b981; }
+
+/* ===== CARD HEADER ===== */
+.event-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.event-title-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.event-name {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.event-id-badge {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.event-badges {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.event-priority,
+.event-status {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* Priority Colors */
+.event-priority.priority-low { background: #d1fae5; color: #065f46; }
+.event-priority.priority-medium { background: #fed7aa; color: #9a3412; }
+.event-priority.priority-high { background: #fee2e2; color: #991b1b; }
+.event-priority.priority-critical { background: #fce7f3; color: #9d174d; }
+
+/* Status Colors */
+.event-status.status-planning { background: #f3f4f6; color: #374151; }
+.event-status.status-progress { background: #dbeafe; color: #1e40af; }
+.event-status.status-hold { background: #fef3c7; color: #92400e; }
+.event-status.status-completed { background: #d1fae5; color: #065f46; }
+.event-status.status-cancelled { background: #fee2e2; color: #991b1b; }
+
+/* ===== CARD CONTENT ===== */
+.event-description {
+  margin: 0 0 16px 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.event-details {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.813rem;
+  border: 1px solid #f3f4f6;
+}
+
+.event-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.event-detail:first-child {
+  margin-bottom: 8px;
+}
+
+.detail-label {
+  color: #6b7280;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 90px;
+}
+
+.detail-value {
+  color: #111827;
+  font-weight: 500;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* ===== CARD ACTIONS ===== */
+.event-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.event-card-actions button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.813rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #32408f;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.event-card-actions button:active {
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .event-card {
+    padding: 16px;
+  }
+  
+  .event-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .event-badges {
+    justify-content: flex-start;
+  }
+  
+  .event-card-actions {
+    flex-direction: column;
+  }
+  
+  .event-card-actions button {
+    width: 100%;
+  }
+  
+  .event-detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .detail-value {
+    text-align: left;
+  }
+}

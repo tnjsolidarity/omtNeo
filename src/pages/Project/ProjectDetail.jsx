@@ -3,9 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiPlus, FiEdit2, FiTrash2, FiCalendar, FiUser, FiFlag, FiBarChart2 } from "react-icons/fi";
 import { getProject, updateProject, deleteProject } from "../../services/projectService";
 import { getActivities, createActivity, updateActivity, deleteActivity } from "../../services/activityService";
+import { getEventStats } from "../../services/eventService"; // Import getEventStats
 import ProjectForm from "../../components/forms/ProjectForm";
 import ActivityForm from "../../components/forms/ActivityForm";
-import ActivityCard from "../../components/activities/ActivityCard";
+import ActivityCard from "../../components/cards/ActivityCard";
 import "../../styles/ProjectDetail.css";
 
 // Initial form states
@@ -44,6 +45,38 @@ function ProjectDetail() {
   const [projectForm, setProjectForm] = useState(INITIAL_PROJECT_FORM);
   const [activityForm, setActivityForm] = useState(INITIAL_ACTIVITY_FORM);
 
+  // Fetch activities with their event stats
+  const fetchActivitiesWithProgress = async () => {
+    try {
+      const activitiesRes = await getActivities(id);
+      
+      const activitiesWithProgress = await Promise.all(
+        activitiesRes.data.map(async (activity) => {
+          try {
+            // Get event stats for this activity (similar to ActivityDetail)
+            const statsRes = await getEventStats(id, activity._id);
+            const stats = statsRes.data;
+            
+            return {
+              ...activity,
+              progress: stats?.progress || 0 // Use the progress from stats
+            };
+          } catch (err) {
+            console.error(`Error fetching event stats for activity ${activity._id}:`, err);
+            return {
+              ...activity,
+              progress: 0
+            };
+          }
+        })
+      );
+      
+      setActivities(activitiesWithProgress);
+    } catch (err) {
+      console.error("Error fetching activities:", err);
+    }
+  };
+
   // Fetch data
   const fetchProject = async () => {
     try {
@@ -64,17 +97,8 @@ function ProjectDetail() {
     }
   };
 
-  const fetchActivities = async () => {
-    try {
-      const res = await getActivities(id);
-      setActivities(res.data);
-    } catch (err) {
-      console.error("Error fetching activities:", err);
-    }
-  };
-
   useEffect(() => {
-    Promise.all([fetchProject(), fetchActivities()]).finally(() => setLoading(false));
+    Promise.all([fetchProject(), fetchActivitiesWithProgress()]).finally(() => setLoading(false));
   }, [id]);
 
   // Project handlers
@@ -116,7 +140,7 @@ function ProjectDetail() {
       } else {
         await createActivity(id, activityForm);
       }
-      await fetchActivities();
+      await fetchActivitiesWithProgress(); // Refresh with progress
       handleCloseActivityForm();
     } catch (err) {
       console.error("Error saving activity:", err);
@@ -146,7 +170,7 @@ function ProjectDetail() {
     setDeletingActivityId(activityId);
     try {
       await deleteActivity(id, activityId);
-      await fetchActivities();
+      await fetchActivitiesWithProgress();
     } catch (err) {
       console.error("Error deleting activity:", err);
       alert("Failed to delete activity");
@@ -276,6 +300,7 @@ function ProjectDetail() {
                 activity={activity}
                 onEdit={handleEditActivity}
                 onDelete={handleDeleteActivity}
+                projectId={id}
               />
             ))
           )}

@@ -1,0 +1,327 @@
+/* ===== ACTIVITY CARD ===== */
+.activity-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.activity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.activity-card:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Priority Borders */
+.activity-card.priority-critical { border-left: 4px solid #c2185b; }
+.activity-card.priority-high { border-left: 4px solid #dc2626; }
+.activity-card.priority-medium { border-left: 4px solid #f59e0b; }
+.activity-card.priority-low { border-left: 4px solid #10b981; }
+
+/* ===== CARD HEADER ===== */
+.activity-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.activity-title-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.activity-name {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.activity-id-badge {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.activity-badges {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.activity-priority,
+.activity-status {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* Priority Colors */
+.activity-priority.priority-low { background: #d1fae5; color: #065f46; }
+.activity-priority.priority-medium { background: #fed7aa; color: #9a3412; }
+.activity-priority.priority-high { background: #fee2e2; color: #991b1b; }
+.activity-priority.priority-critical { background: #fce7f3; color: #9d174d; }
+
+/* Status Colors */
+.activity-status.status-planning { background: #f3f4f6; color: #374151; }
+.activity-status.status-progress { background: #dbeafe; color: #1e40af; }
+.activity-status.status-hold { background: #fef3c7; color: #92400e; }
+.activity-status.status-completed { background: #d1fae5; color: #065f46; }
+.activity-status.status-cancelled { background: #fee2e2; color: #991b1b; }
+
+/* ===== PROGRESS BAR SECTION ===== */
+.activity-progress {
+  margin: 16px 0;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-percentage {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-status {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.progress-status-text {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #6b7280;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress-status.completed .progress-status-text {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* ===== CARD CONTENT ===== */
+.activity-description {
+  margin: 0 0 16px 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.activity-details {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.813rem;
+  border: 1px solid #f3f4f6;
+}
+
+.activity-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.activity-detail:first-child {
+  margin-bottom: 8px;
+}
+
+.detail-label {
+  color: #6b7280;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 70px;
+}
+
+.detail-value {
+  color: #111827;
+  font-weight: 500;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* ===== CARD ACTIONS ===== */
+.activity-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.activity-card-actions button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.813rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #32408f;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.view-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.activity-card-actions button:active {
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .activity-card {
+    padding: 16px;
+  }
+  
+  .activity-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .activity-badges {
+    justify-content: flex-start;
+  }
+  
+  .activity-card-actions {
+    flex-direction: column;
+  }
+  
+  .activity-card-actions button {
+    width: 100%;
+  }
+  
+  .activity-detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .detail-value {
+    text-align: left;
+  }
+  
+  .progress-header {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}

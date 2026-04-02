@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
 import { FiX } from "react-icons/fi";
+import "react-datepicker/dist/react-datepicker.css";
 import "./MemberForm.css";
 
 const MemberForm = ({
@@ -17,72 +19,38 @@ const MemberForm = ({
   departmentOptions,
   passedOutYearOptions,
 }) => {
-  // State for formatted date display
-  const [formattedDate, setFormattedDate] = useState("");
+  // State for date picker
+  const [dob, setDob] = useState(null);
 
-  // Format date from YYYY-MM-DD to DD/MM/YYYY for display
-  const formatDateForDisplay = (dateString) => {
-    if (!dateString) return "";
+  // Convert string date to Date object for date picker
+  const parseDateFromString = (dateString) => {
+    if (!dateString) return null;
     const [year, month, day] = dateString.split("-");
-    if (!year || !month || !day) return "";
-    return `${day}/${month}/${year}`;
+    if (!year || !month || !day) return null;
+    return new Date(year, month - 1, day);
   };
 
-  // Parse date from DD/MM/YYYY to YYYY-MM-DD for storage
-  const parseDateForStorage = (dateString) => {
-    if (!dateString) return "";
-    // Check if it matches DD/MM/YYYY format
-    const parts = dateString.split("/");
-    if (parts.length === 3) {
-      const [day, month, year] = parts;
-      // Validate if it's a valid date
-      if (day && month && year && day.length === 2 && month.length === 2 && year.length === 4) {
-        return `${year}-${month}-${day}`;
-      }
-    }
-    return "";
+  // Convert Date object to YYYY-MM-DD string for storage
+  const formatDateForStorage = (date) => {
+    if (!date) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
-  // Handle date change with custom formatting
-  const handleDateChange = (e) => {
-    let inputValue = e.target.value;
-    
-    // Auto-format as user types
-    let cleaned = inputValue.replace(/\D/g, "");
-    
-    if (cleaned.length >= 3) {
-      cleaned = cleaned.slice(0, 2) + "/" + cleaned.slice(2);
-    }
-    if (cleaned.length >= 6) {
-      cleaned = cleaned.slice(0, 5) + "/" + cleaned.slice(5, 9);
-    }
-    
-    // Limit to 10 characters (DD/MM/YYYY)
-    if (cleaned.length > 10) {
-      cleaned = cleaned.slice(0, 10);
-    }
-    
-    setFormattedDate(cleaned);
-    
-    // Update form with YYYY-MM-DD format if valid
-    if (cleaned.length === 10) {
-      const storageDate = parseDateForStorage(cleaned);
-      if (storageDate) {
-        setForm({ ...form, dateOfBirth: storageDate });
-      } else {
-        setForm({ ...form, dateOfBirth: "" });
-      }
-    } else {
-      setForm({ ...form, dateOfBirth: "" });
-    }
+  // Handle date change
+  const handleDateChange = (date) => {
+    setDob(date);
+    setForm({ ...form, dateOfBirth: formatDateForStorage(date) });
   };
 
-  // Initialize formatted date when form.dateOfBirth changes from props
+  // Initialize date picker when form.dateOfBirth changes from props
   useEffect(() => {
     if (form.dateOfBirth) {
-      setFormattedDate(formatDateForDisplay(form.dateOfBirth));
+      setDob(parseDateFromString(form.dateOfBirth));
     } else {
-      setFormattedDate("");
+      setDob(null);
     }
   }, [form.dateOfBirth]);
 
@@ -106,6 +74,18 @@ const MemberForm = ({
       age--;
     }
     return age;
+  };
+
+  // Get max date (today) to prevent future dates
+  const getMaxDate = () => {
+    return new Date();
+  };
+
+  // Get min date (100 years ago) for reasonable age range
+  const getMinDate = () => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 100);
+    return date;
   };
 
   return (
@@ -148,17 +128,24 @@ const MemberForm = ({
           />
         </div>
         
-        {/* Date of Birth field with DD/MM/YYYY format */}
+        {/* Date of Birth field with DatePicker */}
         <div className="form-field">
           <label className="required">Date of Birth</label>
           <div className="dob-field-container">
-            <input
-              type="text"
-              placeholder="DD/MM/YYYY"
-              value={formattedDate}
+            <DatePicker
+              selected={dob}
               onChange={handleDateChange}
-              maxLength={10}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="DD/MM/YYYY"
               className="dob-input"
+              popperClassName="date-picker-popper"
+              popperPlacement="bottom-start"
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              isClearable
+              maxDate={getMaxDate()}
+              minDate={getMinDate()}
               required
             />
             {form.dateOfBirth && (

@@ -22,6 +22,7 @@
   display: flex;
   flex-direction: column;
   animation: slideIn 0.3s ease-out;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* ===== FORM HEADER ===== */
@@ -29,7 +30,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
+  padding: 20px 24px;
   background: linear-gradient(135deg, #3f51b5, #5c6bc0);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky;
@@ -40,8 +41,8 @@
 
 .form-header h3 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: white;
 }
 
@@ -62,9 +63,8 @@
 }
 
 .form-close-btn:hover {
-  background: #f44336;
+  background: #ef4444;
   transform: rotate(90deg);
-  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
 }
 
 .form-close-btn:active {
@@ -94,31 +94,26 @@
 }
 
 .form-section::-webkit-scrollbar-thumb {
-  background: #bdc3c7;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 .form-section::-webkit-scrollbar-thumb:hover {
-  background: #95a5a6;
-}
-
-.form-section {
-  scrollbar-width: thin;
-  scrollbar-color: #bdc3c7 #f1f1f1;
+  background: #94a3b8;
 }
 
 /* ===== FORM FIELDS ===== */
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
 }
 
 .form-field label {
-  font-size: 13px;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: #2c3e50;
+  color: #374151;
 }
 
 .form-field.full-width {
@@ -128,7 +123,7 @@
 /* Required field indicator */
 .form-field label.required::after {
   content: "*";
-  color: #dc3545;
+  color: #ef4444;
   margin-left: 4px;
 }
 
@@ -136,29 +131,30 @@
 .form-field input,
 .form-field textarea {
   padding: 10px 12px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #dcdfe6;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
   transition: all 0.2s ease;
   font-family: inherit;
   width: 100%;
   box-sizing: border-box;
+  background: white;
 }
 
 .form-field input {
-  height: 40px;
+  height: 42px;
 }
 
 .form-field input:focus,
 .form-field textarea:focus {
   outline: none;
-  border-color: #3f51b5;
-  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.form-field input:hover,
-.form-field textarea:hover {
-  border-color: #3f51b5;
+.form-field input:hover:not(:focus),
+.form-field textarea:hover:not(:focus) {
+  border-color: #9ca3af;
 }
 
 .form-field textarea {
@@ -166,35 +162,153 @@
   min-height: 80px;
 }
 
-/* ===== DATE FIELD STYLES ===== */
-.date-field-container {
+/* ===== DATE PICKER STYLES ===== */
+.date-picker-container {
   position: relative;
   width: 100%;
 }
 
-.date-input {
+.date-picker-input {
   width: 100%;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  transition: all 0.2s ease;
   font-family: monospace;
   letter-spacing: 0.5px;
-  padding-right: 32px !important;
+  background: white;
+  cursor: pointer;
+  height: 42px;
+  box-sizing: border-box;
 }
 
-.date-input::placeholder {
-  color: #adb5bd;
+.date-picker-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.date-picker-input:hover:not(:focus) {
+  border-color: #9ca3af;
+}
+
+.date-picker-input::placeholder {
+  color: #9ca3af;
   font-family: monospace;
   letter-spacing: 0.5px;
 }
 
-/* Calendar icon for date fields */
-.date-field-container::before {
-  content: "📅";
-  position: absolute;
-  right: 12px;
+/* React DatePicker Custom Styles */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+.react-datepicker {
+  font-family: inherit;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.react-datepicker__header {
+  background: linear-gradient(135deg, #3f51b5, #5c6bc0);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 12px;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: white;
+}
+
+.react-datepicker__day-name {
+  font-weight: 500;
+}
+
+.react-datepicker__day {
+  color: #374151;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.react-datepicker__day:hover {
+  background: #e0e7ff;
+  color: #3b82f6;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background: #3b82f6;
+  color: white;
+}
+
+.react-datepicker__day--selected:hover,
+.react-datepicker__day--keyboard-selected:hover {
+  background: #2563eb;
+}
+
+.react-datepicker__day--today {
+  font-weight: bold;
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.react-datepicker__navigation {
+  top: 12px;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: white;
+}
+
+.react-datepicker__month-dropdown,
+.react-datepicker__year-dropdown {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.react-datepicker__month-option,
+.react-datepicker__year-option {
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.react-datepicker__month-option:hover,
+.react-datepicker__year-option:hover {
+  background: #e0e7ff;
+}
+
+.react-datepicker__close-icon {
+  padding: 0;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  pointer-events: none;
+}
+
+.react-datepicker__close-icon::after {
+  background-color: #9ca3af;
   font-size: 14px;
-  opacity: 0.5;
+  line-height: 18px;
+  width: 18px;
+  height: 18px;
+  transition: all 0.2s ease;
+}
+
+.react-datepicker__close-icon:hover::after {
+  background-color: #ef4444;
 }
 
 /* ===== REACT SELECT STYLES ===== */
@@ -203,28 +317,29 @@
 }
 
 .react-select__control {
-  min-height: 40px !important;
-  border-color: #dcdfe6 !important;
+  min-height: 42px !important;
+  border-color: #d1d5db !important;
   box-shadow: none !important;
+  background-color: white !important;
 }
 
 .react-select__control:hover {
-  border-color: #3f51b5 !important;
+  border-color: #9ca3af !important;
 }
 
 .react-select__control--is-focused {
-  border-color: #3f51b5 !important;
-  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1) !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
 }
 
 .react-select__placeholder {
-  color: #6c757d !important;
-  font-size: 14px !important;
+  color: #9ca3af !important;
+  font-size: 0.875rem !important;
 }
 
 .react-select__single-value,
 .react-select__input-container {
-  font-size: 14px !important;
+  font-size: 0.875rem !important;
 }
 
 .react-select__menu {
@@ -234,11 +349,11 @@
 /* ===== ERROR MESSAGE ===== */
 .error-message {
   padding: 10px 12px;
-  background: #ffebee;
-  border: 1px solid #ffcdd2;
-  border-radius: 6px;
-  color: #c62828;
-  font-size: 13px;
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.875rem;
   text-align: center;
 }
 
@@ -250,34 +365,34 @@
   padding-top: 20px;
   grid-column: span 2;
   background: white;
-  border-top: 1px solid #eef2f6;
+  border-top: 1px solid #e5e7eb;
 }
 
 .primary-btn,
 .clear-btn {
   flex: 1;
   padding: 10px 16px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
+  height: 42px;
   border: none;
 }
 
 .primary-btn {
-  background-color: #3f51b5;
+  background-color: #3b82f6;
   color: white;
 }
 
 .primary-btn:hover:not(:disabled) {
-  background-color: #32408f;
+  background-color: #2563eb;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(63, 81, 181, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .primary-btn:disabled {
@@ -286,14 +401,14 @@
 }
 
 .clear-btn {
-  background-color: #6c757d;
-  color: white;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
 }
 
 .clear-btn:hover {
-  background-color: #5a6268;
+  background-color: #e5e7eb;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
 }
 
 .primary-btn:active,
@@ -302,15 +417,17 @@
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 640px) {
+  .activity-form-container {
+    max-width: 95vw;
+  }
 
-/* Tablet and below */
-@media (max-width: 768px) {
   .form-header {
-    padding: 12px 16px;
+    padding: 16px 20px;
   }
 
   .form-header h3 {
-    font-size: 16px;
+    font-size: 1.125rem;
   }
 
   .form-close-btn {
@@ -321,7 +438,7 @@
   .form-section {
     grid-template-columns: 1fr;
     gap: 16px;
-    padding: 16px;
+    padding: 20px;
   }
 
   .form-field.full-width {
@@ -340,53 +457,18 @@
   .clear-btn {
     width: 100%;
   }
-
-  .form-field label {
-    font-size: 12px;
+  
+  /* Responsive date picker adjustments */
+  .react-datepicker-popper {
+    position: fixed !important;
+    top: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    max-width: 320px !important;
   }
-
-  .react-select__control {
-    min-height: 38px !important;
-  }
-
-  .date-field-container::before {
-    right: 10px;
-    font-size: 12px;
-  }
-
-  .date-input {
-    padding-right: 28px !important;
-  }
-
-  .error-message {
-    font-size: 12px;
-    padding: 8px 10px;
-  }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  .form-header {
-    padding: 10px 12px;
-  }
-
-  .form-section {
-    padding: 12px;
-    gap: 12px;
-  }
-
-  .form-field input,
-  .form-field textarea {
-    padding: 8px 10px;
-    font-size: 13px;
-  }
-
-  .form-field input {
-    height: 38px;
-  }
-
-  .form-buttons {
-    margin-top: 12px;
-    padding-top: 12px;
+  
+  .react-datepicker {
+    width: 100% !important;
   }
 }

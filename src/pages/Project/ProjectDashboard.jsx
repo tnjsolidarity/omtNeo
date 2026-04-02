@@ -50,8 +50,7 @@ const SORT_OPTIONS = [
   { value: 'startDate', label: 'Start Date' },
   { value: 'endDate', label: 'End Date' },
   { value: 'createdAt', label: 'Created Date' },
-  { value: 'updatedAt', label: 'Updated Date' },
-  { value: 'description', label: 'Description' }
+  { value: 'updatedAt', label: 'Updated Date' }
 ];
 
 function ProjectDashboard() {
@@ -151,9 +150,11 @@ function ProjectDashboard() {
       status: project.status || "Planning",
       startDate: project.startDate ? project.startDate.split("T")[0] : "",
       endDate: project.endDate ? project.endDate.split("T")[0] : "",
-      projectManager: typeof project.projectManager === 'object' 
-        ? project.projectManager._id 
-        : project.projectManager || "",
+      projectManager: project.projectManager ? (
+        typeof project.projectManager === 'object' 
+          ? project.projectManager._id 
+          : project.projectManager
+      ) : "",
       priority: project.priority || "Medium"
     });
     setEditingId(project._id);
@@ -232,7 +233,7 @@ function ProjectDashboard() {
       }
       
       // String fields
-      if (['name', 'projectManager', 'projectId', 'description'].includes(sortConfig.key)) {
+      if (['name', 'projectManager', 'projectId'].includes(sortConfig.key)) {
         const valA = (a[sortConfig.key] || '').toString().toLowerCase();
         const valB = (b[sortConfig.key] || '').toString().toLowerCase();
         
@@ -261,7 +262,6 @@ function ProjectDashboard() {
 
   const sortedProjects = getSortedProjects(filteredProjects);
   const isSortActive = sortConfig.key !== 'status' || sortConfig.direction !== 'asc';
-  const isSearchActive = searchTerm !== "";
 
   const getStatusClass = (status) => STATUS_COLOR_MAP[status] || 'status-planning';
   const getPriorityClass = (priority) => PRIORITY_COLOR_MAP[priority] || 'priority-medium';
@@ -270,7 +270,7 @@ function ProjectDashboard() {
     if (!dateString) return null;
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric'
     });
   };
@@ -324,7 +324,7 @@ function ProjectDashboard() {
                   placeholder="Search projects by ID, name, description, or manager..."
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  className={`search-input ${isSearchActive ? 'active' : ''}`}
+                  className="search-input"
                 />
               </div>
 
@@ -366,7 +366,7 @@ function ProjectDashboard() {
           {/* Form Modal */}
           {formOpen && (
             <div className="modal-overlay">
-              <div className="modal-content project-form-modal">
+              <div className="modal-content">
                 <ProjectForm
                   form={form}
                   setForm={setForm}
@@ -450,17 +450,19 @@ function ProjectDashboard() {
                     </div>
                   </div>
 
-                  <div className="project-progress">
-                    <div className="progress-bar">
-                      <div
-                        className="progress-fill"
-                        style={{ width: `${project.progress || 0}%` }}
-                      ></div>
+                  {project.progress !== undefined && (
+                    <div className="project-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: `${project.progress}%` }}
+                        />
+                      </div>
+                      <span className="progress-text">
+                        {project.progress}% Completed
+                      </span>
                     </div>
-                    <span className="progress-text">
-                      {project.progress || 0}% Completed
-                    </span>
-                  </div>
+                  )}
                   
                   <p className="project-description">
                     {project.description || "No description provided"}
