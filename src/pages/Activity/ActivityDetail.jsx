@@ -51,6 +51,7 @@ const INITIAL_EVENT_FORM = {
   description: "",
   priority: "Medium",
   status: "Planning",
+  place: "",
   startDate: "",
   endDate: "",
   assignedTo: ""
@@ -184,6 +185,7 @@ function ActivityDetail() {
       description: event.description || "",
       priority: event.priority || "Medium",
       status: event.status || "Planning",
+      place: event.place || "",
       startDate: event.startDate ? event.startDate.split("T")[0] : "",
       endDate: event.endDate ? event.endDate.split("T")[0] : "",
       assignedTo: event.assignedTo?._id || event.assignedTo || ""

@@ -22,18 +22,25 @@ const STATUS_OPTIONS = [
 
 // Place options - you can customize these or fetch from API
 const PLACE_OPTIONS = [
-  { value: "People Welfare Center", label: "People Welfare Center" },
-  { value: "MRG Engineering", label: "MRG Engineering" },
-  { value: "Makka Masjid - Eeswari Nagar", label: "Makka Masjid - Eeswari Nagar" },
-  { value: "Attar Mohalla Masjid", label: "Attar Mohalla Masjid" },
-  { value: "Kuppatheru Masjid", label: "Kuppatheru Masjid" },
-  { value: "Royal School", label: "Royal School" },
-  { value: "Sri Besant Lodge", label: "Sri Besant Lodge" },
-  { value: "Aringar Anna Marriage Hall", label: "Aringar Anna Marriage Hall" },
-  { value: "Jupiter Theater Main Road", label: "(Jupiter Theater-Burma Bazar-Anna Road) Meeting Point" },
-  { value: "Sai Veni Sports Academy", label: "Sai Veni Sports Academy" },
   { value: "ALMS Jamia Masjid - Athirambattinam", label: "ALMS Jamia Masjid - Athirambattinam" },
+  { value: "Annai Fathima School", label: "Annai Fathima School" },
+  { value: "Aringar Anna Marriage Hall", label: "Aringar Anna Marriage Hall" },
+  { value: "Attar Mohalla Masjid", label: "Attar Mohalla Masjid" },
+  { value: "Hajira Aapa House", label: "Hajira Aapa House" },
+  { value: "Ilayangudi - Mayiladuthurai", label: "Ilayangudi - Mayiladuthurai" },
   { value: "JIH Office - Perambur", label: "JIH Office - Perambur" },
+  { value: "Jupiter Theater Main Road", label: "(Jupiter Theater-Burma Bazar-Anna Road) Meeting Point" },
+  { value: "Kuppatheru Masjid", label: "Kuppatheru Masjid" },
+  { value: "Maharnonmbuchavady Masjid", label: "Maharnonmbuchavady Masjid" },
+  { value: "Makka Masjid - Eeswari Nagar", label: "Makka Masjid - Eeswari Nagar" },
+  { value: "MRG Engineering", label: "MRG Engineering" },
+  { value: "Noor Masjid", label: "Noor Masjid" },
+  { value: "Online", label: "Online" },
+  { value: "People Welfare Center", label: "People Welfare Center" },
+  { value: "Royal School", label: "Royal School" },
+  { value: "Sai Veni Sports Academy", label: "Sai Veni Sports Academy" },
+  { value: "Solidarity Office - Thanjavur", label: "Solidarity Office - Thanjavur" },
+  { value: "Sri Besant Lodge", label: "Sri Besant Lodge" }
 ];
 
 function EventForm({
@@ -175,7 +182,7 @@ function EventForm({
     
     fetchMembers();
   }, []);
-
+  
   const selectedAssignedTo = members.find(m => m.value === form.assignedTo);
   const selectedPlace = PLACE_OPTIONS.find(p => p.value === form.place);
 
