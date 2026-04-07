@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiPlus, FiEdit2, FiTrash2, FiCalendar, FiUser, FiFlag, FiBarChart2, FiArrowUp, FiArrowDown, FiChevronDown } from "react-icons/fi";
+import { FiArrowLeft, FiPlus, FiEdit2, FiTrash2, FiCalendar, FiUser, FiFlag, FiBarChart2, FiArrowUp, FiArrowDown } from "react-icons/fi";
 import { getActivity, updateActivity, deleteActivity } from "../../services/activityService";
 import { getEvents, createEvent, updateEvent, deleteEvent, getEventStats } from "../../services/eventService";
+import { getTaskStats } from "../../services/taskService"; // Import task stats
 import ActivityForm from "../../components/forms/ActivityForm";
 import EventForm from "../../components/forms/EventForm";
 import EventCard from "../../components/cards/EventCard";
@@ -113,10 +114,40 @@ function ActivityDetail() {
     }
   };
 
+  // Fetch events with task stats
   const fetchEvents = async () => {
     try {
       const res = await getEvents(projectId, activityId);
-      setEvents(res.data.events || []);
+      const eventsData = res.data.events || [];
+      
+      // Fetch task stats for each event
+      const eventsWithTaskStats = await Promise.all(
+        eventsData.map(async (event) => {
+          try {
+            const taskStatsRes = await getTaskStats(projectId, activityId, event._id);
+            const taskStats = taskStatsRes.data;
+            
+            return {
+              ...event,
+              taskStats: {
+                total: taskStats?.total || 0,
+                completed: taskStats?.completed || 0,
+                progress: taskStats?.progress || 0,
+                inProgress: taskStats?.inProgress || 0,
+                notStarted: taskStats?.byStatus?.['Not Started'] || 0
+              }
+            };
+          } catch (err) {
+            console.error(`Error fetching task stats for event ${event._id}:`, err);
+            return {
+              ...event,
+              taskStats: null
+            };
+          }
+        })
+      );
+      
+      setEvents(eventsWithTaskStats);
       setEventStats(res.data.stats);
     } catch (err) {
       console.error("Error fetching events:", err);
@@ -528,6 +559,8 @@ function ActivityDetail() {
                 event={event}
                 onEdit={handleEditEvent}
                 onDelete={handleDeleteEvent}
+                projectId={projectId}
+                activityId={activityId}
               />
             ))
           )}

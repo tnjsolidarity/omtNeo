@@ -1,8 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { FiEdit2, FiTrash2, FiCalendar, FiFlag, FiUser, FiMapPin } from "react-icons/fi";
 import "./EventCard.css";
 
-function EventCard({ event, onEdit, onDelete }) {
+function EventCard({ event, onEdit, onDelete, projectId, activityId }) {
+  const navigate = useNavigate();
+  
   // Priority mapping
   const priorityMap = {
     'Low': 'priority-low',
@@ -38,8 +41,55 @@ function EventCard({ event, onEdit, onDelete }) {
 
   const assigneeName = getAssigneeName();
 
+  // Handle card click - navigate to event detail
+  const handleCardClick = () => {
+    if (projectId && activityId && event._id) {
+      navigate(`/projects/${projectId}/activities/${activityId}/events/${event._id}`);
+    }
+  };
+
+  const handleCardKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleCardClick();
+    }
+  };
+
+  // Get progress value - use event's own progress if available, otherwise use task progress
+  const getProgress = () => {
+    if (event.progress !== undefined) return event.progress;
+    if (event.taskStats && event.taskStats.progress !== undefined) return event.taskStats.progress;
+    return 0;
+  };
+
+  const progress = getProgress();
+
+  // Get progress bar color based on percentage
+  const getProgressColor = () => {
+    if (progress >= 100) return '#10b981';
+    if (progress >= 75) return '#3b82f6';
+    if (progress >= 50) return '#f59e0b';
+    if (progress >= 25) return '#f97316';
+    return '#ef4444';
+  };
+
+  // Get status text based on progress
+  const getProgressStatus = () => {
+    if (progress >= 100) return 'Completed';
+    if (progress >= 75) return 'Almost Done';
+    if (progress >= 50) return 'Half Way';
+    if (progress >= 25) return 'In Progress';
+    return 'Just Started';
+  };
+
   return (
-    <div className={`event-card ${getPriorityClass(event.priority)}`}>
+    <div 
+      className={`event-card ${getPriorityClass(event.priority)}`}
+      onClick={handleCardClick}
+      onKeyPress={handleCardKeyPress}
+      role="button"
+      tabIndex={0}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="event-card-header">
         <div className="event-title-section">
           <h3 className="event-name">{event.name}</h3>
@@ -62,8 +112,35 @@ function EventCard({ event, onEdit, onDelete }) {
         <p className="event-description">{event.description}</p>
       )}
 
+      {/* Progress Bar Section - Same as ActivityCard */}
+      <div className="event-progress">
+        <div className="progress-header">
+          <span className="progress-label">Progress</span>
+          <span className="progress-percentage">{progress}%</span>
+        </div>
+        <div className="progress-bar-container">
+          <div 
+            className="progress-bar-fill"
+            style={{ 
+              width: `${progress}%`,
+              backgroundColor: getProgressColor()
+            }}
+          />
+        </div>
+        {progress > 0 && progress < 100 && (
+          <div className="progress-status">
+            <span className="progress-status-text">{getProgressStatus()}</span>
+          </div>
+        )}
+        {progress === 100 && (
+          <div className="progress-status completed">
+            <span className="progress-status-text">✓ Completed</span>
+          </div>
+        )}
+      </div>
+
       <div className="event-details">
-        {/* Place Field - NEW */}
+        {/* Place Field */}
         {event.place && (
           <div className="event-detail">
             <span className="detail-label">
@@ -98,7 +175,10 @@ function EventCard({ event, onEdit, onDelete }) {
       <div className="event-card-actions">
         <button 
           className="edit-btn" 
-          onClick={() => onEdit(event)}
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            onEdit(event); 
+          }}
           aria-label="Edit event"
         >
           <FiEdit2 size={16} />
@@ -106,7 +186,10 @@ function EventCard({ event, onEdit, onDelete }) {
         </button>
         <button 
           className="delete-btn" 
-          onClick={() => onDelete(event._id)}
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            onDelete(event._id); 
+          }}
           aria-label="Delete event"
         >
           <FiTrash2 size={16} />

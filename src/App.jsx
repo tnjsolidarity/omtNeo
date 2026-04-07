@@ -6,6 +6,8 @@ import MemberDetail from "./pages/Member/MemberDetail";
 import ProjectDetail from "./pages/Project/ProjectDetail";
 import PrivateRoute from "./components/PrivateRoute";
 import ActivityDetail from "./pages/Activity/ActivityDetail";
+// In your router configuration
+import EventDetail from "./pages/Event/EventDetail";
 
 function App() {
   return (
@@ -59,6 +61,16 @@ function App() {
             </PrivateRoute>
           } 
         />
+        
+        <Route 
+        path="/projects/:projectId/activities/:activityId/events/:eventId" 
+        element={
+          <PrivateRoute>
+            <EventDetail />
+          </PrivateRoute>
+        }        
+        />
+
       </Routes>
     </BrowserRouter>
   );

@@ -18,8 +18,13 @@ API.interceptors.request.use((req) => {
 export const getEvents = (projectId, activityId) => 
   API.get(`/${projectId}/activities/${activityId}/events`);
 
+// Get event statistics for ALL events in an activity (for progress bar)
 export const getEventStats = (projectId, activityId) => 
   API.get(`/${projectId}/activities/${activityId}/events/stats`);
+
+// Get task statistics for a SPECIFIC event (for task progress)
+export const getTaskStatsForEvent = (projectId, activityId, eventId) => 
+  API.get(`/${projectId}/activities/${activityId}/events/${eventId}/tasks/stats`);
 
 export const getEvent = (projectId, activityId, eventId) => 
   API.get(`/${projectId}/activities/${activityId}/events/${eventId}`);
@@ -32,3 +37,7 @@ export const updateEvent = (projectId, activityId, eventId, data) =>
 
 export const deleteEvent = (projectId, activityId, eventId) => 
   API.delete(`/${projectId}/activities/${activityId}/events/${eventId}`);
+
+// Get event with all tasks (for event detail page)
+export const getEventWithTasks = (projectId, activityId, eventId) => 
+  API.get(`/${projectId}/activities/${activityId}/events/${eventId}/details`);
