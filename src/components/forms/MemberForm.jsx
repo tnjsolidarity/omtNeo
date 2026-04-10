@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
-import { FiX } from "react-icons/fi";
+import { FiX, FiUpload, FiUser } from "react-icons/fi";
 import "react-datepicker/dist/react-datepicker.css";
 import "./MemberForm.css";
 
@@ -19,10 +19,11 @@ const MemberForm = ({
   departmentOptions,
   passedOutYearOptions,
 }) => {
-  // State for date picker
   const [dob, setDob] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
 
-  // Convert string date to Date object for date picker
+  // Parse date function
   const parseDateFromString = (dateString) => {
     if (!dateString) return null;
     const [year, month, day] = dateString.split("-");
@@ -30,7 +31,6 @@ const MemberForm = ({
     return new Date(year, month - 1, day);
   };
 
-  // Convert Date object to YYYY-MM-DD string for storage
   const formatDateForStorage = (date) => {
     if (!date) return "";
     const year = date.getFullYear();
@@ -39,13 +39,11 @@ const MemberForm = ({
     return `${year}-${month}-${day}`;
   };
 
-  // Handle date change
   const handleDateChange = (date) => {
     setDob(date);
     setForm({ ...form, dateOfBirth: formatDateForStorage(date) });
   };
 
-  // Initialize date picker when form.dateOfBirth changes from props
   useEffect(() => {
     if (form.dateOfBirth) {
       setDob(parseDateFromString(form.dateOfBirth));
@@ -54,7 +52,42 @@ const MemberForm = ({
     }
   }, [form.dateOfBirth]);
 
-  // Handle passedOutYear change safely
+  // Handle photo upload
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Photo size should be less than 5MB");
+        return;
+      }
+      
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Only JPG, PNG, GIF, and WEBP formats are allowed");
+        return;
+      }
+      
+      setPhotoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      
+      // Update form with file
+      setForm({ ...form, photoFile: file });
+    }
+  };
+
+  // Initialize photo preview when editing
+  useEffect(() => {
+    if (form.photoUrl && !photoPreview) {
+      setPhotoPreview(form.photoUrl);
+    }
+  }, [form.photoUrl]);
+
   const handlePassedOutYearChange = (selected) => {
     setForm({ 
       ...form, 
@@ -62,7 +95,6 @@ const MemberForm = ({
     });
   };
 
-  // Add this helper function for age calculation display
   const calculateAge = (dob) => {
     if (!dob) return null;
     const birth = new Date(dob);
@@ -76,12 +108,10 @@ const MemberForm = ({
     return age;
   };
 
-  // Get max date (today) to prevent future dates
   const getMaxDate = () => {
     return new Date();
   };
 
-  // Get min date (100 years ago) for reasonable age range
   const getMinDate = () => {
     const date = new Date();
     date.setFullYear(date.getFullYear() - 100);
@@ -90,7 +120,6 @@ const MemberForm = ({
 
   return (
     <div className="member-form-container">
-      {/* Form Header with Title and Close Button */}
       <div className="form-header">
         <h3>{editingId ? 'Edit Member' : 'Add New Member'}</h3>
         <button 
@@ -104,6 +133,49 @@ const MemberForm = ({
       </div>
 
       <div className="form-section">
+        {/* Photo Upload Field */}
+        <div className="form-field photo-upload-field">
+          <label>Profile Photo</label>
+          <div className="photo-upload-container">
+            <div className="photo-preview">
+              {photoPreview ? (
+                <img src={photoPreview} alt="Preview" className="photo-preview-img" />
+              ) : (
+                <div className="photo-placeholder">
+                  <FiUser size={40} />
+                  <span>No Photo</span>
+                </div>
+              )}
+            </div>
+            <div className="photo-upload-controls">
+              <label className="photo-upload-btn">
+                <FiUpload size={16} />
+                {photoPreview ? "Change Photo" : "Upload Photo"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                  onChange={handlePhotoChange}
+                  style={{ display: 'none' }}
+                />
+              </label>
+              {photoPreview && (
+                <button
+                  type="button"
+                  className="photo-remove-btn"
+                  onClick={() => {
+                    setPhotoPreview(null);
+                    setPhotoFile(null);
+                    setForm({ ...form, photoFile: null, photoUrl: null });
+                  }}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          </div>
+          <small className="photo-hint">Supported formats: JPG, PNG, GIF, WEBP (Max 5MB)</small>
+        </div>
+
         {/* Name Field */}
         <div className="form-field">
           <label className="required">Full Name</label>
@@ -128,7 +200,7 @@ const MemberForm = ({
           />
         </div>
         
-        {/* Date of Birth field with DatePicker */}
+        {/* Date of Birth field */}
         <div className="form-field">
           <label className="required">Date of Birth</label>
           <div className="dob-field-container">

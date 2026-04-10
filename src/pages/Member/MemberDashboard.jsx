@@ -87,12 +87,15 @@ function MemberDashboard() {
     { value: "Accounting", label: "Accounting" },
     { value: "Acting", label: "Acting" },
     { value: "Career Guidance", label: "Career Guidance" },
+    { value: "Content Creator", label: "Content Creator" },
     { value: "Cooking", label: "Cooking" },
     { value: "Construction Engineering", label: "Construction Engineering" },
+    { value: "Documentation", label: "Documentation" },
     { value: "Driving", label: "Driving" },
     { value: "Graphic Design", label: "Graphic Design" },
     { value: "Literature", label: "Literature" },
     { value: "Management", label: "Management" },
+    { value: "Marketing", label: "Marketing" },
     { value: "Mechanical Skills", label: "Mechanical Skills" },
     { value: "Organising", label: "Organising" },
     { value: "IT Skills", label: "IT Skills" },
@@ -112,6 +115,7 @@ function MemberDashboard() {
     { value: "Catering", label: "Catering" },
     { value: "Home Automation", label: "Home Automation" },
     { value: "Mobile Shop", label: "Mobile Shop" },
+    { value: "Media Manager", label: "Media Manager" },
     { value: "Procurement", label: "Procurement" },
     { value: "School Student", label: "School Student" },
     { value: "Site Supervisor", label: "Site Supervisor" },
@@ -121,6 +125,7 @@ function MemberDashboard() {
   ];
 
   const educationOptions = [
+    { value: "BBA", label: "BBA" },
     { value: "BCom", label: "BCom" },
     { value: "BE", label: "BE" },
     { value: "BSc", label: "BSc" },
@@ -171,21 +176,37 @@ function MemberDashboard() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const payload = {
-        ...form,
-        dateOfBirth: form.dateOfBirth || null,
-        skills: form.skills?.map((s) => s.value) || [],
-        career: form.career?.map((c) => c.value) || [],
-        education: form.education?.map((e) => e.value) || [],
-        educationalDepartment: form.educationalDepartment || "",
-        passedOutYear: form.passedOutYear ? parseInt(form.passedOutYear) : null,
-      };
+      const formData = new FormData();
+      
+      // Append all fields to FormData
+      formData.append('name', form.name);
+      formData.append('phone', form.phone);
+      formData.append('role', form.role);
+      if (form.dateOfBirth) formData.append('dateOfBirth', form.dateOfBirth);
+      if (form.educationalDepartment) formData.append('educationalDepartment', form.educationalDepartment);
+      if (form.passedOutYear) formData.append('passedOutYear', form.passedOutYear);
+      
+      // Append arrays as JSON strings
+      if (form.skills?.length) {
+        formData.append('skills', JSON.stringify(form.skills.map(s => s.value)));
+      }
+      if (form.career?.length) {
+        formData.append('career', JSON.stringify(form.career.map(c => c.value)));
+      }
+      if (form.education?.length) {
+        formData.append('education', JSON.stringify(form.education.map(e => e.value)));
+      }
+      
+      // Append photo if exists
+      if (form.photoFile) {
+        formData.append('photo', form.photoFile);
+      }
 
       if (editingId) {
-        await updateMember(editingId, payload);
+        await updateMember(editingId, formData);
         setEditingId(null);
       } else {
-        await createMember(payload);
+        await createMember(formData);
       }
 
       handleClear();
@@ -223,6 +244,8 @@ function MemberDashboard() {
       dateOfBirth: member.dateOfBirth
         ? member.dateOfBirth.split("T")[0]
         : "",
+      photoUrl: member.photoUrl || null,
+      photoFile: null,
       skills: member.skills
         ? member.skills.map((skill) => ({ value: skill, label: skill }))
         : [],
@@ -668,6 +691,12 @@ function MemberDashboard() {
                     className={`member-simple-card role-${member.role?.replace(/\s+/g, "") || "Associate"}`}
                     key={member._id}
                   >
+                    {member.photoUrl && (
+                      <div className="member-simple-photo">
+                        <img src={member.photoUrl} alt={member.name} />
+                      </div>
+                    )}
+                    
                     <div className="member-simple-content">
                       <div className="member-simple-role">{member.role}</div>
                       <h3 className="member-simple-name">{member.name}</h3>

@@ -81,6 +81,12 @@ function MemberDetail() {
 
       {/* Main content card */}
       <div className={`member-detail-card role-${member.role?.replace(/\s+/g, "") || "Associate"}`}>
+        {member.photoUrl && (
+          <div className="profile-photo-section">
+            <img src={member.photoUrl} alt={member.name} className="profile-photo-large" />
+          </div>
+        )}
+        
         {/* Basic Info Section */}
         <div className="detail-section basic-info">
           <h2>{member.name}</h2>

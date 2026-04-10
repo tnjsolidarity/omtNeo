@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
-import logo from "../assets/OmtNeoCrop.png";
+import logo from "../assets/OmtNeoCrop.webp";
 import bgLogo from "../assets/SolidarityTJLogo.png";
 
 function Login() {

@@ -295,6 +295,21 @@
   font-size: 13px;
 }
 
+.profile-photo-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profile-photo-large {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
 /* Responsive Design - optimized for all screens */
 @media (max-width: 768px) {
   .member-detail-container {
