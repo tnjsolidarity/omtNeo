@@ -313,6 +313,14 @@ function ProjectDashboard() {
                     >
                       Project Dashboard
                     </Link>
+                    {/* Add Attendance Dashboard link */}
+                    <Link 
+                      to="/attendancedashboard"
+                      className="dropdown-item"
+                      onClick={() => setDashboardDropdownOpen(false)}
+                    >
+                      Attendance Dashboard
+                    </Link>
                   </div>
                 )}
               </div>

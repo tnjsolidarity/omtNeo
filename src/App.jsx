@@ -6,8 +6,8 @@ import MemberDetail from "./pages/Member/MemberDetail";
 import ProjectDetail from "./pages/Project/ProjectDetail";
 import PrivateRoute from "./components/PrivateRoute";
 import ActivityDetail from "./pages/Activity/ActivityDetail";
-// In your router configuration
 import EventDetail from "./pages/Event/EventDetail";
+import AttendanceDashboard from "./pages/Attendance/AttendanceDashboard";
 
 function App() {
   return (
@@ -69,6 +69,16 @@ function App() {
             <EventDetail />
           </PrivateRoute>
         }        
+        />
+
+        {/* Protected Attendance Routes */}
+        <Route
+          path="/attendancedashboard"
+          element={
+            <PrivateRoute>
+              <AttendanceDashboard />
+            </PrivateRoute>
+          }
         />
 
       </Routes>

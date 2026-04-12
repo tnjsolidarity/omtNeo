@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiPlus, FiEdit2, FiTrash2, FiCalendar, FiUser, FiFlag, FiBarChart2, FiClock, FiCheckCircle, FiLoader } from "react-icons/fi";
+import { FiArrowLeft, FiPlus, FiEdit2, FiTrash2, FiCalendar, FiUser, FiFlag, FiBarChart2, FiClock, FiCheckCircle, FiLoader, FiUsers, FiXCircle, FiAlertCircle } from "react-icons/fi";
 import { getEvent, updateEvent, deleteEvent } from "../../services/eventService";
 import { getTasks, createTask, updateTask, deleteTask, getTaskStats } from "../../services/taskService";
+import { getAttendancesForEvent, createAttendanceForEvent, updateAttendanceForEvent, deleteAttendanceForEvent } from "../../services/attendanceService";
 import EventForm from "../../components/forms/EventForm";
 import TaskForm from "../../components/forms/TaskForm";
 import TaskCard from "../../components/cards/TaskCard";
+import AttendanceForm from "../../components/forms/AttendanceForm";
+import AttendanceCard from "../../components/cards/AttendanceCard";
 import "../../styles/EventDetail.css";
 
 const INITIAL_EVENT_FORM = {
@@ -37,10 +40,14 @@ function EventDetail() {
   const [event, setEvent] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [taskStats, setTaskStats] = useState(null);
+  const [attendances, setAttendances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editEventOpen, setEditEventOpen] = useState(false);
   const [taskFormOpen, setTaskFormOpen] = useState(false);
+  const [attendanceFormOpen, setAttendanceFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [editingAttendance, setEditingAttendance] = useState(null);
+  const [showAttendances, setShowAttendances] = useState(true);
   
   const [eventForm, setEventForm] = useState(INITIAL_EVENT_FORM);
   const [taskForm, setTaskForm] = useState(INITIAL_TASK_FORM);
@@ -82,9 +89,20 @@ function EventDetail() {
     }
   };
 
+  const fetchAttendances = async () => {
+    try {
+      const res = await getAttendancesForEvent(projectId, activityId, eventId);
+      const attendanceList = res.data || [];
+      setAttendances(attendanceList);
+    } catch (err) {
+      console.error("Error fetching attendances:", err);
+      setAttendances([]);
+    }
+  };
+
   useEffect(() => {
     if (projectId && activityId && eventId) {
-      Promise.all([fetchEvent(), fetchTasks()]).finally(() => setLoading(false));
+      Promise.all([fetchEvent(), fetchTasks(), fetchAttendances()]).finally(() => setLoading(false));
     }
   }, [projectId, activityId, eventId]);
 
@@ -103,7 +121,7 @@ function EventDetail() {
   };
 
   const handleDeleteEvent = async () => {
-    if (!window.confirm("Are you sure you want to delete this event and all its tasks?")) return;
+    if (!window.confirm("Are you sure you want to delete this event and all its tasks and attendances?")) return;
     
     setLoading(true);
     try {
@@ -168,6 +186,70 @@ function EventDetail() {
     setTaskFormOpen(false);
     setEditingTask(null);
     setTaskForm(INITIAL_TASK_FORM);
+  };
+
+  // Attendance Handlers
+  const handleCreateAttendance = async (attendanceData) => {
+    setLoading(true);
+    try {
+      await createAttendanceForEvent(projectId, activityId, eventId, attendanceData);
+      await fetchAttendances();
+      setAttendanceFormOpen(false);
+    } catch (err) {
+      console.error("Error creating attendance:", err);
+      alert(err.response?.data?.error || "Failed to create attendance");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateAttendance = async (attendanceId, attendanceData) => {
+    setLoading(true);
+    try {
+      await updateAttendanceForEvent(projectId, activityId, eventId, attendanceId, attendanceData);
+      await fetchAttendances();
+      setAttendanceFormOpen(false);
+      setEditingAttendance(null);
+    } catch (err) {
+      console.error("Error updating attendance:", err);
+      alert(err.response?.data?.error || "Failed to update attendance");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAttendance = async (attendanceId) => {
+    if (!window.confirm("Are you sure you want to delete this attendance record?")) return;
+    
+    setLoading(true);
+    try {
+      await deleteAttendanceForEvent(projectId, activityId, eventId, attendanceId);
+      await fetchAttendances();
+    } catch (err) {
+      console.error("Error deleting attendance:", err);
+      alert("Failed to delete attendance");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditAttendance = (attendance) => {
+    setEditingAttendance(attendance);
+    setAttendanceFormOpen(true);
+  };
+
+  const handleCloseAttendanceForm = () => {
+    setAttendanceFormOpen(false);
+    setEditingAttendance(null);
+    fetchAttendances();
+  };
+
+  const handleAttendanceSubmit = (attendanceData) => {
+    if (editingAttendance) {
+      handleUpdateAttendance(editingAttendance._id, attendanceData);
+    } else {
+      handleCreateAttendance(attendanceData);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -255,6 +337,49 @@ function EventDetail() {
         </div>
       </div>
 
+      {/* Attendance Section */}
+      <div className="attendance-section">
+        <div className="attendance-header">
+          <div className="attendance-header-left">
+            <h2>
+              <FiUsers size={20} />
+              Attendance Records ({attendances.length})
+            </h2>
+          </div>
+          <div className="attendance-header-actions">
+            <button 
+              className="toggle-attendance-btn" 
+              onClick={() => setShowAttendances(!showAttendances)}
+            >
+              {showAttendances ? "Hide Attendances" : "Show Attendances"}
+            </button>
+            <button className="add-attendance-btn" onClick={() => setAttendanceFormOpen(true)}>
+              <FiPlus size={18} />
+              Add Attendance
+            </button>
+          </div>
+        </div>
+
+        {showAttendances && (
+          <div className="attendances-grid">
+            {attendances.length === 0 ? (
+              <div className="no-attendances">
+                <p>No attendance records yet. Click 'Add Attendance' to create your first attendance record!</p>
+              </div>
+            ) : (
+              attendances.map((attendance) => (
+                <AttendanceCard
+                  key={attendance._id}
+                  attendance={attendance}
+                  onEdit={handleEditAttendance}
+                  onDelete={handleDeleteAttendance}
+                />
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Tasks Section */}
       <div className="tasks-section">
         <div className="tasks-header">
@@ -333,10 +458,6 @@ function EventDetail() {
                 task={task}
                 onEdit={handleEditTask}
                 onDelete={handleDeleteTask}
-                onClick={() => {
-                  // Optional: Navigate to task detail page
-                  // navigate(`/tasks/${task._id}`);
-                }}
               />
             ))
           )}
@@ -372,6 +493,22 @@ function EventDetail() {
               editingId={editingTask?._id}
               handleClear={handleCloseTaskForm}
               handleClose={handleCloseTaskForm}
+              projectId={projectId}
+              activityId={activityId}
+              eventId={eventId}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Attendance Form Modal */}
+      {attendanceFormOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content attendance-modal-content">
+            <AttendanceForm
+              onSuccess={handleCloseAttendanceForm}
+              onCancel={handleCloseAttendanceForm}
+              editData={editingAttendance}
               projectId={projectId}
               activityId={activityId}
               eventId={eventId}

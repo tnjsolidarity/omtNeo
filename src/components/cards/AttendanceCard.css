@@ -1,0 +1,211 @@
+/* Removed unused classes: none of your JSX uses these */
+/* .attendance-date .meta-item (wasn't in original HTML structure) */
+/* Everything else kept exactly as is */
+
+.attendance-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.attendance-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Status Borders */
+.attendance-card.status-all-present { border-left: 5px solid #10b981; }
+.attendance-card.status-all-absent { border-left: 5px solid #ef4444; }
+.attendance-card.status-mostly-present { border-left: 5px solid #059669; }
+.attendance-card.status-mostly-absent { border-left: 5px solid #dc2626; }
+.attendance-card.status-empty { border-left: 5px solid #9ca3af; }
+
+/* Header */
+.attendance-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.attendance-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.attendance-id-badge {
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.7rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.attendance-status-badge {
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+/* Progress - Very Compact */
+.attendance-progress {
+  background: #f9fafb;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+}
+
+.progress-bar-container {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  transition: width 0.4s ease;
+  border-radius: 9999px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.progress-percentage {
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.progress-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Meta Row */
+.attendance-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.attendance-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Details */
+.attendance-details {
+  background: #f9fafb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #f3f4f6;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.detail-item:last-child { margin-bottom: 0; }
+
+.detail-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 10px 6px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+}
+
+.stat-number {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.stat-number.present { color: #10b981; }
+.stat-number.other { color: #ef4444; }
+
+.stat-label {
+  font-size: 0.68rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Actions */
+.attendance-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.attendance-card-actions button {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.edit-btn { background: #3f51b5; color: white; }
+.delete-btn { background: #ef4444; color: white; }
+.view-btn { background: #10b981; color: white; }
+
+.edit-btn:hover, .delete-btn:hover, .view-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .attendance-card {
+    padding: 14px;
+  }
+  .stats-grid {
+    gap: 6px;
+  }
+  .attendance-card-actions {
+    flex-direction: column;
+  }
+}

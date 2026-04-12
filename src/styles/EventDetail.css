@@ -1,9 +1,12 @@
+/* ===== EVENT DETAIL STYLES ===== */
+
 .event-detail-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
 }
 
+/* Header */
 .event-detail-header {
   display: flex;
   justify-content: space-between;
@@ -72,6 +75,7 @@
   background: #dc2626;
 }
 
+/* Event Detail Card */
 .event-detail-card {
   background: white;
   border-radius: 12px;
@@ -134,6 +138,17 @@
   gap: 6px;
 }
 
+.status-badge-large.status-planning { background: #e0e7ff; color: #3730a3; }
+.status-badge-large.status-inprogress { background: #fef3c7; color: #92400e; }
+.status-badge-large.status-review { background: #e0e7ff; color: #3730a3; }
+.status-badge-large.status-completed { background: #d1fae5; color: #065f46; }
+.status-badge-large.status-cancelled { background: #fee2e2; color: #991b1b; }
+
+.priority-badge-large.priority-critical { background: #fce7f3; color: #be185d; }
+.priority-badge-large.priority-high { background: #fee2e2; color: #dc2626; }
+.priority-badge-large.priority-medium { background: #fef3c7; color: #d97706; }
+.priority-badge-large.priority-low { background: #d1fae5; color: #059669; }
+
 .event-description-large {
   color: #6b7280;
   line-height: 1.6;
@@ -173,10 +188,12 @@
   font-weight: 500;
 }
 
+/* Tasks Section */
 .tasks-section {
   background: white;
   border-radius: 12px;
   padding: 28px;
+  margin-bottom: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -243,6 +260,7 @@
   transform: translateY(-1px);
 }
 
+/* Task Stats */
 .task-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -315,6 +333,99 @@
   grid-column: 1 / -1;
 }
 
+/* Attendance Section */
+.attendance-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.attendance-header-left h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+.attendance-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.toggle-attendance-btn {
+  padding: 8px 16px;
+  background: #64748b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.toggle-attendance-btn:hover {
+  background: #475569;
+  transform: translateY(-1px);
+}
+
+.add-attendance-btn {
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.add-attendance-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* Attendances Grid */
+.attendances-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.no-attendances {
+  text-align: center;
+  padding: 48px;
+  color: #718096;
+  background: #f8f9fc;
+  border-radius: 8px;
+  border: 1px dashed #e0e4ea;
+}
+
+/* Modals */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -338,6 +449,12 @@
   overflow-y: auto;
 }
 
+.attendance-modal-content {
+  max-width: 900px;
+  width: 90%;
+}
+
+/* Loading State */
 .event-detail-loading {
   display: flex;
   flex-direction: column;
@@ -360,13 +477,15 @@
   100% { transform: rotate(360deg); }
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .event-detail-container {
     padding: 16px;
   }
   
   .event-detail-card,
-  .tasks-section {
+  .tasks-section,
+  .attendance-section {
     padding: 20px;
   }
   
@@ -384,6 +503,25 @@
   
   .task-stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .attendance-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .attendance-header-actions {
+    width: 100%;
+  }
+  
+  .toggle-attendance-btn,
+  .add-attendance-btn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .attendances-grid {
+    grid-template-columns: 1fr;
   }
 }
 

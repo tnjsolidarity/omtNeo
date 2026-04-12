@@ -1,5 +1,4 @@
-/* Import MemberForm styles */
-@import url('../components/forms/MemberForm.css');
+/* ===== MEMBER DASHBOARD STYLES ===== */
 
 /* ===== FULL PAGE LAYOUT ===== */
 .dashboard-fullpage {
@@ -154,7 +153,6 @@
   box-shadow: 0 4px 8px rgba(63, 81, 181, 0.2);
 }
 
-/* Used state - when filter/sort is applied */
 .action-btn.used {
   background-color: #f39c12;
   color: white;
@@ -164,7 +162,6 @@
   background-color: #e67e22;
 }
 
-/* Active state - when panel is open */
 .action-btn.active {
   background-color: #2c3e50;
   color: white;
@@ -172,6 +169,15 @@
 
 .action-btn.active:hover {
   background-color: #1a252f;
+}
+
+/* Analytics button */
+.analytics-btn {
+  background-color: #8b5cf6;
+}
+
+.analytics-btn:hover {
+  background-color: #7c3aed;
 }
 
 /* Logout button */
@@ -193,36 +199,22 @@
   background-color: #32408f;
 }
 
-/* Sort button specific styles - RESTORED TO ORIGINAL */
-.action-btn.sort-btn {
+/* Filter button */
+.action-btn.filter-btn {
   background-color: #3f51b5;
-  color: white;
-  border: none;
-  transition: all 0.2s;
 }
 
-.action-btn.sort-btn:hover {
-  background-color: #32408f;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(63, 81, 181, 0.2);
+.action-btn.filter-btn.used {
+  background-color: #f39c12;
+}
+
+/* Sort button */
+.action-btn.sort-btn {
+  background-color: #3f51b5;
 }
 
 .action-btn.sort-btn.used {
   background-color: #f39c12;
-  color: white;
-}
-
-.action-btn.sort-btn.used:hover {
-  background-color: #e67e22;
-}
-
-.action-btn.sort-btn.active {
-  background-color: #2c3e50;
-  color: white;
-}
-
-.action-btn.sort-btn.active:hover {
-  background-color: #1a252f;
 }
 
 .sort-text {
@@ -248,31 +240,32 @@
   border: 2px solid white;
 }
 
-/* ===== SEARCH ===== */
+/* ===== SEARCH INPUT ===== */
 .search-wrapper {
+  position: relative;
   min-width: 250px;
 }
 
 .search-input {
   width: 100%;
-  height: 40px;
-  padding: 8px 16px;
-  font-size: 14px;
-  border-radius: 8px;
+  padding: 8px 12px;
   border: 1px solid #dcdfe6;
-  box-sizing: border-box;
+  border-radius: 8px;
+  font-size: 14px;
   transition: all 0.2s;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 .search-input:focus {
-  border-color: #3f51b5;
   outline: none;
+  border-color: #3f51b5;
   box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
 }
 
 .search-input.active {
-  border-color: #f39c12;
-  box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+  border-color: #3f51b5;
+  background-color: #f8f9fc;
 }
 
 /* ===== SCROLLABLE CONTENT ===== */
@@ -285,7 +278,6 @@
   scroll-behavior: smooth;
 }
 
-/* Custom Scrollbar */
 .dashboard-content::-webkit-scrollbar {
   width: 8px;
 }
@@ -312,43 +304,19 @@
   transform: translateY(-20px);
   transition: all 0.4s ease;
   margin-bottom: 0;
-  background: white;
-  border-radius: 12px;
 }
 
 .analytics-section.visible {
-  max-height: 450px;
+  max-height: 600px;
   opacity: 1;
   transform: translateY(0);
   margin-bottom: 20px;
-  padding: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .analytics-scrollable {
-  max-height: 450px;
+  max-height: 500px;
   overflow-y: auto;
-  overflow-x: hidden;
-  padding: 20px;
-  scroll-behavior: smooth;
-}
-
-.analytics-scrollable::-webkit-scrollbar {
-  width: 8px;
-}
-
-.analytics-scrollable::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.analytics-scrollable::-webkit-scrollbar-thumb {
-  background: #bdc3c7;
-  border-radius: 4px;
-}
-
-.analytics-scrollable::-webkit-scrollbar-thumb:hover {
-  background: #95a5a6;
+  padding: 4px;
 }
 
 /* ===== FILTER SECTION ===== */
@@ -492,10 +460,6 @@
   color: currentColor;
 }
 
-.sort-option-btn.active .sort-icon {
-  color: white;
-}
-
 .clear-sort-btn {
   background: #95a5a6;
   color: white;
@@ -521,7 +485,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -531,7 +495,7 @@
 .modal-content {
   background: white;
   width: 90%;
-  max-width: 800px;
+  max-width: 700px;
   max-height: 90vh;
   overflow-y: auto;
   border-radius: 10px;
@@ -581,85 +545,71 @@
   gap: 16px;
 }
 
-/* ===== MEMBER CARD STYLES ===== */
+/* Member Card */
 .member-simple-card {
   background: white;
   border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.2s ease;
+  cursor: pointer;
   text-decoration: none;
-  color: inherit;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border-left: 4px solid #ccc;
+  border: 1px solid #e0e4ea;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .member-simple-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Role-based card borders */
-.role-Associate {
-  border-left-color: #4CAF50;
+/* Role-based card top borders */
+.member-simple-card.role-Associate { border-top: 3px solid #4CAF50; }
+.member-simple-card.role-Member { border-top: 3px solid #2196F3; }
+.member-simple-card.role-GuestMember { border-top: 3px solid #FF9800; }
+.member-simple-card.role-DistrictSecretary { border-top: 3px solid #9C27B0; }
+.member-simple-card.role-DistrictPresident { border-top: 3px solid #F44336; }
+.member-simple-card.role-StatePresident { border-top: 3px solid #673AB7; }
+
+.member-simple-photo {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  background: #f5f5f5;
 }
-.role-Member {
-  border-left-color: #2196F3;
+
+.member-simple-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s;
 }
-.role-GuestMember {
-  border-left-color: #FF9800;
-}
-.role-DistrictSecretary {
-  border-left-color: #9C27B0;
-}
-.role-DistrictPresident {
-  border-left-color: #F44336;
-}
-.role-StatePresident {
-  border-left-color: #673AB7;
+
+.member-simple-card:hover .member-simple-photo img {
+  transform: scale(1.05);
 }
 
 .member-simple-content {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  padding: 14px;
+  flex: 1;
 }
 
-/* Role-based badge colors */
 .member-simple-role {
   display: inline-block;
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 4px;
   font-size: 11px;
-  font-weight: 500;
-  color: white;
-  align-self: flex-start;
+  font-weight: 600;
+  text-transform: uppercase;
   letter-spacing: 0.3px;
-}
-
-.role-Associate .member-simple-role {
-  background-color: #4CAF50;
-}
-.role-Member .member-simple-role {
-  background-color: #2196F3;
-}
-.role-GuestMember .member-simple-role {
-  background-color: #FF9800;
-}
-.role-DistrictSecretary .member-simple-role {
-  background-color: #9C27B0;
-}
-.role-DistrictPresident .member-simple-role {
-  background-color: #F44336;
-}
-.role-StatePresident .member-simple-role {
-  background-color: #673AB7;
+  margin-bottom: 10px;
+  background: #e9ecef;
+  color: #495057;
 }
 
 .member-simple-name {
-  margin: 0;
+  margin: 0 0 6px 0;
   font-size: 16px;
   font-weight: 600;
   color: #2c3e50;
@@ -667,70 +617,61 @@
 }
 
 .member-simple-id {
-  font-size: 12px;
+  font-size: 11px;
   color: #7f8c8d;
-  margin-bottom: 2px;
+  margin-bottom: 8px;
+  font-family: monospace;
 }
 
-/* Age styles */
 .member-simple-age {
   font-size: 12px;
-  color: #555;
+  color: #3f51b5;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 4px;
-  margin: 2px 0;
-  background-color: #f8f9fc;
-  padding: 3px 8px;
-  border-radius: 4px;
-  border-left: 2px solid #3f51b5;
 }
 
 .age-label {
-  font-weight: 600;
-  color: #2c3e50;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  font-weight: 500;
+  color: #7f8c8d;
 }
 
 .age-value {
-  color: #3f51b5;
   font-weight: 600;
-  font-size: 12px;
+  color: #3f51b5;
 }
 
 .member-simple-career {
   font-size: 12px;
-  color: #555;
+  color: #6c757d;
   display: flex;
+  gap: 6px;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px;
-  margin-top: 2px;
-  line-height: 1.4;
+  margin-top: 6px;
 }
 
 .career-label {
   font-weight: 500;
-  color: #666;
+  color: #7f8c8d;
 }
 
 .career-value {
   color: #2c3e50;
+  font-weight: 500;
 }
 
 .career-value.none {
-  color: #95a5a6;
+  color: #adb5bd;
   font-style: italic;
 }
 
 .member-simple-actions {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
-  border-top: 1px solid #ecf0f1;
-  padding-top: 12px;
+  padding: 12px 14px;
+  background: #f8f9fc;
+  border-top: 1px solid #e0e4ea;
 }
 
 .member-simple-actions button {
@@ -742,91 +683,50 @@
   font-size: 12px;
   font-weight: 500;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
-.member-simple-actions .edit-btn {
+.call-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.call-btn:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.edit-btn {
   background-color: #3f51b5;
   color: white;
 }
 
-.member-simple-actions .edit-btn:hover {
+.edit-btn:hover {
   background-color: #32408f;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(63, 81, 181, 0.3);
 }
 
-.member-simple-actions .delete-btn {
+.delete-btn {
   background-color: #e74c3c;
   color: white;
 }
 
-.member-simple-actions .delete-btn:hover {
+.delete-btn:hover:not(:disabled) {
   background-color: #c0392b;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
 }
 
-.member-simple-actions .delete-btn:disabled {
+.delete-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-}
-/* Add to your MemberDashboard.css */
-
-/* Call Button Styles */
-.call-btn {
-  background: linear-gradient(135deg, #4caf50, #45a049);
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 60px;
-  justify-content: center;
-}
-
-.call-btn:hover {
-  background: linear-gradient(135deg, #45a049, #3d8b40);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-}
-
-.call-btn:active {
-  transform: translateY(0);
-}
-
-/* Adjust action buttons layout */
-.member-simple-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-
-.member-simple-actions button {
-  flex: 1;
-  min-width: 70px;
-}
-
-.member-simple-photo {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.member-simple-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -842,8 +742,7 @@
   }
 
   .search-wrapper {
-    flex: 1;
-    min-width: 200px;
+    min-width: auto;
   }
 
   .sort-options-grid {
@@ -869,11 +768,6 @@
     min-width: 100px;
     padding: 0 12px;
     font-size: 13px;
-  }
-
-  .search-wrapper {
-    width: 100%;
-    order: -1;
   }
 
   .filter-panel {
@@ -907,18 +801,6 @@
     gap: 12px;
   }
 
-  .member-simple-card {
-    padding: 14px;
-  }
-
-  .analytics-section.visible {
-    max-height: 500px;
-  }
-
-  .analytics-scrollable {
-    max-height: 500px;
-  }
-
   .results-summary {
     flex-direction: column;
     gap: 8px;
@@ -945,33 +827,10 @@
     display: none;
   }
 
-  .member-simple-card {
-    padding: 12px;
-  }
-
-  .member-simple-name {
-    font-size: 15px;
-  }
-
-  .member-simple-actions button {
-    padding: 5px 6px;
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 768px) {
-  .call-btn {
-    padding: 5px 10px;
-    font-size: 11px;
-    gap: 4px;
-  }
-}
-
-@media (max-width: 480px) {
   .member-simple-actions {
     flex-direction: column;
   }
-  
+
   .member-simple-actions button {
     width: 100%;
   }
