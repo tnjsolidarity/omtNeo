@@ -17,7 +17,7 @@ function MemberDashboard() {
   const location = useLocation();
   const [dashboardDropdownOpen, setDashboardDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  
+
   const formRef = useRef(null);
   const analyticsRef = useRef(null);
   const filterRef = useRef(null);
@@ -44,7 +44,7 @@ function MemberDashboard() {
   const [roleFilter, setRoleFilter] = useState("");
   const [skillFilter, setSkillFilter] = useState([]);
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
-  
+
   const [sortConfig, setSortConfig] = useState({
     key: 'name',
     direction: 'asc'
@@ -90,15 +90,17 @@ function MemberDashboard() {
     { value: "Content Creator", label: "Content Creator" },
     { value: "Cooking", label: "Cooking" },
     { value: "Construction Engineering", label: "Construction Engineering" },
+    { value: "Cyber Security", label: "Cyber Security" },
     { value: "Documentation", label: "Documentation" },
     { value: "Driving", label: "Driving" },
     { value: "Graphic Design", label: "Graphic Design" },
+    { value: "IT Skills", label: "IT Skills" },
     { value: "Literature", label: "Literature" },
     { value: "Management", label: "Management" },
     { value: "Marketing", label: "Marketing" },
     { value: "Mechanical Skills", label: "Mechanical Skills" },
+    { value: "Networking", label: "Networking" },
     { value: "Organising", label: "Organising" },
-    { value: "IT Skills", label: "IT Skills" },
     { value: "Singing", label: "Singing" },
     { value: "Speech", label: "Speech" },
     { value: "Sports", label: "Sports" },
@@ -177,7 +179,7 @@ function MemberDashboard() {
     setLoading(true);
     try {
       const formData = new FormData();
-      
+
       // Append all fields to FormData
       formData.append('name', form.name);
       formData.append('phone', form.phone);
@@ -185,7 +187,7 @@ function MemberDashboard() {
       if (form.dateOfBirth) formData.append('dateOfBirth', form.dateOfBirth);
       if (form.educationalDepartment) formData.append('educationalDepartment', form.educationalDepartment);
       if (form.passedOutYear) formData.append('passedOutYear', form.passedOutYear);
-      
+
       // Append arrays as JSON strings
       if (form.skills?.length) {
         formData.append('skills', JSON.stringify(form.skills.map(s => s.value)));
@@ -196,7 +198,7 @@ function MemberDashboard() {
       if (form.education?.length) {
         formData.append('education', JSON.stringify(form.education.map(e => e.value)));
       }
-      
+
       // Append photo if exists
       if (form.photoFile) {
         formData.append('photo', form.photoFile);
@@ -282,13 +284,13 @@ function MemberDashboard() {
       alert("No phone number available for this member");
       return;
     }
-    
+
     // Format phone number (remove any spaces or special characters if needed)
     const formattedNumber = phoneNumber.replace(/\s/g, '');
-    
+
     // Create tel: link for mobile devices
     const telLink = `tel:${formattedNumber}`;
-    
+
     // Open the call dialer
     window.location.href = telLink;
   };
@@ -364,39 +366,39 @@ function MemberDashboard() {
         const roleB = ROLE_ORDER[b.role] || 999;
         return sortConfig.direction === 'asc' ? roleA - roleB : roleB - roleA;
       }
-      
+
       // Handle array fields (sort by length)
       if (sortConfig.key === 'skills' || sortConfig.key === 'career' || sortConfig.key === 'education') {
         const lengthA = (a[sortConfig.key] || []).length;
         const lengthB = (b[sortConfig.key] || []).length;
         return sortConfig.direction === 'asc' ? lengthA - lengthB : lengthB - lengthA;
       }
-      
+
       // Handle date fields
       if (sortConfig.key === 'dateOfBirth' || sortConfig.key === 'createdAt' || sortConfig.key === 'updatedAt') {
         const dateA = a[sortConfig.key] ? new Date(a[sortConfig.key]).getTime() : 0;
         const dateB = b[sortConfig.key] ? new Date(b[sortConfig.key]).getTime() : 0;
         return sortConfig.direction === 'asc' ? dateA - dateB : dateB - dateA;
       }
-      
+
       // Handle numeric fields
       if (sortConfig.key === 'passedOutYear') {
         const yearA = a.passedOutYear || 0;
         const yearB = b.passedOutYear || 0;
         return sortConfig.direction === 'asc' ? yearA - yearB : yearB - yearA;
       }
-      
+
       // Handle string fields
-      if (sortConfig.key === 'name' || sortConfig.key === 'memberId' || 
-          sortConfig.key === 'phone' || sortConfig.key === 'educationalDepartment') {
+      if (sortConfig.key === 'name' || sortConfig.key === 'memberId' ||
+        sortConfig.key === 'phone' || sortConfig.key === 'educationalDepartment') {
         const valA = (a[sortConfig.key] || '').toString().toLowerCase();
         const valB = (b[sortConfig.key] || '').toString().toLowerCase();
-        
+
         if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
         if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
       }
-      
+
       return 0;
     });
   };
@@ -417,8 +419,8 @@ function MemberDashboard() {
     const matchesSkills =
       skillFilter.length > 0
         ? skillFilter.every((selectedSkill) =>
-            member.skills?.includes(selectedSkill.value)
-          )
+          member.skills?.includes(selectedSkill.value)
+        )
         : true;
 
     return matchesSearch && matchesRole && matchesSkills;
@@ -437,7 +439,7 @@ function MemberDashboard() {
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
       age--;
     }
@@ -452,7 +454,7 @@ function MemberDashboard() {
           <div className="dashboard-header-content">
             <div className="header-left">
               <div className="custom-dropdown" ref={dropdownRef}>
-                <button 
+                <button
                   className="custom-dropdown-toggle"
                   onClick={() => setDashboardDropdownOpen(!dashboardDropdownOpen)}
                 >
@@ -463,14 +465,7 @@ function MemberDashboard() {
                 </button>
                 {dashboardDropdownOpen && (
                   <div className="custom-dropdown-menu">
-                    <Link 
-                      to="/memberdashboard"
-                      className={`dropdown-item ${location.pathname === '/memberdashboard' ? 'active' : ''}`}
-                      onClick={() => setDashboardDropdownOpen(false)}
-                    >
-                      Member Dashboard
-                    </Link>
-                    <Link 
+                    <Link
                       to="/projectdashboard"
                       className={`dropdown-item ${location.pathname === '/projectdashboard' ? 'active' : ''}`}
                       onClick={() => setDashboardDropdownOpen(false)}
@@ -478,12 +473,19 @@ function MemberDashboard() {
                       Project Dashboard
                     </Link>
                     {/* Add Attendance Dashboard link */}
-                    <Link 
+                    <Link
                       to="/attendancedashboard"
                       className="dropdown-item"
                       onClick={() => setDashboardDropdownOpen(false)}
                     >
                       Attendance Dashboard
+                    </Link>
+                    <Link
+                      to="/accounts"
+                      className={"dropdown-item"}
+                      onClick={() => setDashboardDropdownOpen(false)}
+                    >
+                      Accounts Dashboard
                     </Link>
                   </div>
                 )}
@@ -496,7 +498,7 @@ function MemberDashboard() {
               >
                 {analyticsOpen ? "Close Analytics" : "Analytics"}
               </button>
-              
+
               <div className="search-wrapper">
                 <input
                   ref={searchRef}
@@ -526,8 +528,8 @@ function MemberDashboard() {
                   Sort
                   {sortConfig.key && (
                     <span className="sort-label">
-                      {sortConfig.key === 'name' && sortConfig.direction === 'asc' 
-                        ? "" 
+                      {sortConfig.key === 'name' && sortConfig.direction === 'asc'
+                        ? ""
                         : `: ${sortOptions.find(opt => opt.value === sortConfig.key)?.label}`
                       }
                     </span>
@@ -544,7 +546,7 @@ function MemberDashboard() {
               <button className="action-btn logout-btn" onClick={handleLogout}>
                 Logout
               </button>
-              
+
               <button
                 className="action-btn add-btn"
                 onClick={handleAddMemberToggle}
@@ -559,7 +561,7 @@ function MemberDashboard() {
         {/* Scrollable Content Area */}
         <div className="dashboard-content">
           {/* Analytics Section */}
-          <div 
+          <div
             ref={analyticsRef}
             className={`analytics-section ${analyticsOpen ? "visible" : ""}`}
           >
@@ -567,7 +569,7 @@ function MemberDashboard() {
               <MemberAnalytics members={members} />
             </div>
           </div>
-          
+
           {/* Filter Section */}
           <div className={`filter-section ${filterOpen ? "visible" : ""}`}>
             <div className="filter-panel">
@@ -633,8 +635,8 @@ function MemberDashboard() {
                     >
                       {option.label}
                       {sortConfig.key === option.value && (
-                        sortConfig.direction === 'asc' ? 
-                          <FiArrowUp className="sort-icon" /> : 
+                        sortConfig.direction === 'asc' ?
+                          <FiArrowUp className="sort-icon" /> :
                           <FiArrowDown className="sort-icon" />
                       )}
                     </button>
@@ -681,7 +683,7 @@ function MemberDashboard() {
             <span>Showing {sortedAndFilteredMembers.length} members</span>
             {sortConfig.key && (
               <span className="current-sort">
-                Sorted by: {sortOptions.find(opt => opt.value === sortConfig.key)?.label} 
+                Sorted by: {sortOptions.find(opt => opt.value === sortConfig.key)?.label}
                 ({sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'})
               </span>
             )}
@@ -704,12 +706,12 @@ function MemberDashboard() {
                         <img src={member.photoUrl} alt={member.name} />
                       </div>
                     )}
-                    
+
                     <div className="member-simple-content">
                       <div className="member-simple-role">{member.role}</div>
                       <h3 className="member-simple-name">{member.name}</h3>
                       <div className="member-simple-id">ID: {member.memberId || "Not assigned"}</div>
-                      
+
                       {/* Age Display */}
                       {member.dateOfBirth && (
                         <div className="member-simple-age">
@@ -717,7 +719,7 @@ function MemberDashboard() {
                           <span className="age-value">{calculateAge(member.dateOfBirth)} years</span>
                         </div>
                       )}
-                      
+
                       <div className="member-simple-career">
                         <span className="career-label">Career:</span>
                         {member.career?.length > 0 ? (
@@ -744,7 +746,7 @@ function MemberDashboard() {
                           Call
                         </button>
                       )}
-                      
+
                       <button
                         className="edit-btn"
                         onClick={(e) => {

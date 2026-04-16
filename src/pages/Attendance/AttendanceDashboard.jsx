@@ -442,6 +442,13 @@ const AttendanceDashboard = () => {
                     >
                       Project Dashboard
                     </Link>
+                    <Link 
+                      to="/accounts"
+                      className={"dropdown-item"}
+                      onClick={() => setDashboardDropdownOpen(false)}
+                    >
+                      Accounts Dashboard
+                    </Link>
                   </div>
                 )}
               </div>

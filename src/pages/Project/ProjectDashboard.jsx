@@ -306,13 +306,6 @@ function ProjectDashboard() {
                     >
                       Member Dashboard
                     </Link>
-                    <Link 
-                      to="/projectdashboard"
-                      className={`dropdown-item ${location.pathname === '/projectdashboard' ? 'active' : ''}`}
-                      onClick={() => setDashboardDropdownOpen(false)}
-                    >
-                      Project Dashboard
-                    </Link>
                     {/* Add Attendance Dashboard link */}
                     <Link 
                       to="/attendancedashboard"
@@ -320,6 +313,13 @@ function ProjectDashboard() {
                       onClick={() => setDashboardDropdownOpen(false)}
                     >
                       Attendance Dashboard
+                    </Link>
+                    <Link 
+                      to="/accounts"
+                      className={"dropdown-item"}
+                      onClick={() => setDashboardDropdownOpen(false)}
+                    >
+                      Accounts Dashboard
                     </Link>
                   </div>
                 )}

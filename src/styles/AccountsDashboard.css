@@ -1,0 +1,517 @@
+/* ===================================================================
+   AccountsDashboard.css - Complete with MemberDashboard modal styles
+   =================================================================== */
+
+/* ── Design tokens ─────────────────────────────────────────────────── */
+:root {
+  /* Brand */
+  --ad-primary:       #3f51b5;
+  --ad-primary-dark:  #32408f;
+  --ad-primary-glow:  rgba(63, 81, 181, 0.18);
+
+  /* Danger */
+  --ad-danger:        #e74c3c;
+  --ad-danger-dark:   #c0392b;
+  --ad-danger-glow:   rgba(231, 76, 60, 0.18);
+
+  /* Neutrals */
+  --ad-text-primary:   #2c3e50;
+  --ad-text-secondary: #7f8c8d;
+  --ad-text-hint:      #adb5bd;
+  --ad-border:         #e0e4ea;
+  --ad-bg-page:        #f8f9fc;
+  --ad-bg-card:        #ffffff;
+  --ad-bg-secondary:   #f8f9fc;
+
+  /* Semantic fills (summary cards) */
+  --ad-income-bg:   #e8f5e9; --ad-income-text:   #2e7d32;
+  --ad-sponsor-bg:  #e3f2fd; --ad-sponsor-text:  #1565c0;
+  --ad-expense-bg:  #ffebee; --ad-expense-text:  #c62828;
+  --ad-due-bg:      #fff3e0; --ad-due-text:      #ef6c00;
+
+  /* Shadows */
+  --ad-shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.05);
+  --ad-shadow-md:   0 8px 16px rgba(0, 0, 0, 0.10);
+
+  /* Radii */
+  --ad-radius-sm:  6px;
+  --ad-radius-md:  8px;
+  --ad-radius-lg:  12px;
+  --ad-radius-xl:  16px;
+}
+
+/* ── Full-page shell ────────────────────────────────────────────────── */
+.accounts-fullpage {
+  position: fixed;
+  inset: 0;
+  background: var(--ad-bg-page);
+  display: flex;
+  flex-direction: column;
+}
+
+.accounts-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: var(--ad-bg-card);
+  overflow: hidden;
+}
+
+/* ── Sticky header ──────────────────────────────────────────────────── */
+.accounts-header {
+  flex-shrink: 0;
+  background: var(--ad-bg-card);
+  border-bottom: 1px solid var(--ad-border);
+  box-shadow: var(--ad-shadow-sm);
+  z-index: 200;
+  padding: 12px 24px;
+}
+
+.accounts-header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.accounts-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Nav dropdown ───────────────────────────────────────────────────── */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--ad-bg-secondary);
+  border: 1px solid var(--ad-border);
+  border-radius: var(--ad-radius-md);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ad-text-primary);
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.nav-dropdown-toggle:hover,
+.nav-dropdown-toggle:focus-visible {
+  background: #e9ecef;
+  border-color: var(--ad-primary);
+  outline: none;
+}
+
+.nav-dropdown-chevron {
+  transition: transform 0.25s ease;
+  color: var(--ad-text-secondary);
+}
+.nav-dropdown-chevron.open { transform: rotate(180deg); }
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--ad-bg-card);
+  border: 1px solid var(--ad-border);
+  border-radius: var(--ad-radius-md);
+  box-shadow: var(--ad-shadow-md);
+  min-width: 210px;
+  z-index: 1000;
+  overflow: hidden;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+}
+
+.nav-dropdown-item {
+  display: block;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: var(--ad-text-primary);
+  font-size: 14px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-dropdown-item:hover {
+  background: var(--ad-bg-secondary);
+  color: var(--ad-primary);
+}
+
+.nav-dropdown-item.active {
+  background: var(--ad-primary);
+  color: #fff;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────── */
+.btn {
+  height: 38px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: none;
+  border-radius: var(--ad-radius-md);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ad-primary);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--ad-primary);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--ad-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px var(--ad-primary-glow);
+}
+
+.btn-danger {
+  background: var(--ad-danger);
+  color: #fff;
+}
+.btn-danger:hover {
+  background: var(--ad-danger-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px var(--ad-danger-glow);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ad-text-secondary);
+  border: 1px solid var(--ad-border);
+}
+.btn-ghost:hover {
+  background: var(--ad-bg-secondary);
+  color: var(--ad-text-primary);
+}
+
+/* ── Scrollable content pane ────────────────────────────────────────── */
+.accounts-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px;
+  background: var(--ad-bg-page);
+  scroll-behavior: smooth;
+}
+
+.accounts-content::-webkit-scrollbar { width: 7px; }
+.accounts-content::-webkit-scrollbar-track { background: transparent; }
+.accounts-content::-webkit-scrollbar-thumb {
+  background: var(--ad-border);
+  border-radius: 4px;
+}
+.accounts-content::-webkit-scrollbar-thumb:hover {
+  background: var(--ad-text-hint);
+}
+
+/* ── Summary strip ──────────────────────────────────────────────────── */
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.summary-card {
+  background: var(--ad-bg-card);
+  border: 1px solid var(--ad-border);
+  border-radius: var(--ad-radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--ad-shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ad-shadow-md);
+}
+
+.summary-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--ad-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-card--income  .summary-card__icon { background: var(--ad-income-bg);  color: var(--ad-income-text);  }
+.summary-card--sponsor .summary-card__icon { background: var(--ad-sponsor-bg); color: var(--ad-sponsor-text); }
+.summary-card--expense .summary-card__icon { background: var(--ad-expense-bg); color: var(--ad-expense-text); }
+.summary-card--due     .summary-card__icon { background: var(--ad-due-bg);     color: var(--ad-due-text);     }
+
+/* Accent left border per type */
+.summary-card--income  { border-left: 3px solid var(--ad-income-text);  }
+.summary-card--sponsor { border-left: 3px solid var(--ad-sponsor-text); }
+.summary-card--expense { border-left: 3px solid var(--ad-expense-text); }
+.summary-card--due     { border-left: 3px solid var(--ad-due-text);     }
+
+.summary-card__body { flex: 1; min-width: 0; }
+
+.summary-card__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ad-text-secondary);
+  margin: 0 0 4px;
+}
+
+.summary-card__amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ad-text-primary);
+  margin: 0 0 4px;
+  line-height: 1.1;
+}
+
+.summary-card__sub {
+  font-size: 11px;
+  color: var(--ad-text-hint);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Tab bar ────────────────────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--ad-border);
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ad-text-secondary);
+  border-radius: var(--ad-radius-sm) var(--ad-radius-sm) 0 0;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--ad-primary);
+  background: var(--ad-primary-glow);
+}
+
+.tab-btn--active {
+  color: var(--ad-primary);
+  border-bottom-color: var(--ad-primary);
+  background: transparent;
+}
+
+.tab-btn__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--ad-bg-secondary);
+  color: var(--ad-text-secondary);
+  border: 1px solid var(--ad-border);
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab-btn--active .tab-btn__count {
+  background: var(--ad-primary-glow);
+  color: var(--ad-primary);
+  border-color: transparent;
+}
+
+/* ── Records section ────────────────────────────────────────────────── */
+.records-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ad-text-primary);
+  margin: 0 0 20px;
+}
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 56px 24px;
+  background: var(--ad-bg-card);
+  border-radius: var(--ad-radius-lg);
+  border: 2px dashed var(--ad-border);
+  color: var(--ad-text-secondary);
+  font-size: 15px;
+}
+
+/* ===== MODAL OVERLAY (matching MemberDashboard) ===== */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-box {
+  background: transparent;
+  width: 90%;
+  max-width: 700px;
+  height: auto;
+  max-height: 85vh; /* Control max height at modal level */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Ensure forms inside modal take full width */
+.modal-box > * {
+  width: 100%;
+  max-height: 85vh; /* Inherit from parent */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== INLINE DELETE CONFIRM DIALOG (matching MemberDashboard style) ===== */
+.confirm-box {
+  background: white;
+  border-radius: 12px;
+  padding: 32px 28px 28px;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+}
+
+.confirm-box__icon {
+  color: var(--ad-danger, #e74c3c);
+  line-height: 1;
+}
+
+.confirm-box__title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ad-text-primary, #2c3e50);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.confirm-box__desc {
+  font-size: 13px;
+  color: var(--ad-text-secondary, #7f8c8d);
+  margin: 0;
+}
+
+.confirm-box__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.confirm-box__actions .btn {
+  flex: 1;
+  height: 40px;
+}
+
+/* Animation keyframes */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .accounts-header-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .accounts-header-actions {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .accounts-header { padding: 12px 16px; }
+  .accounts-content { padding: 16px; }
+
+  .summary-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .summary-card { padding: 14px; gap: 12px; }
+  .summary-card__icon { width: 44px; height: 44px; }
+  .summary-card__amount { font-size: 18px; }
+
+  .tab-bar { overflow-x: auto; }
+  .tab-btn { white-space: nowrap; font-size: 13px; padding: 10px 14px; }
+
+  .records-grid { grid-template-columns: 1fr; }
+  
+  .modal-box {
+    width: 95%;
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-strip { grid-template-columns: 1fr; }
+  .accounts-header { padding: 10px 12px; }
+  .accounts-content { padding: 12px; }
+  .modal-box { max-height: 94vh; }
+}

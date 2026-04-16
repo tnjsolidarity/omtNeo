@@ -8,6 +8,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import ActivityDetail from "./pages/Activity/ActivityDetail";
 import EventDetail from "./pages/Event/EventDetail";
 import AttendanceDashboard from "./pages/Attendance/AttendanceDashboard";
+import AccountsDashboard from "./pages/Accounts/AccountsDashboard";
 
 function App() {
   return (
@@ -77,6 +78,16 @@ function App() {
           element={
             <PrivateRoute>
               <AttendanceDashboard />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Protected Accounts Routes */}
+        <Route
+          path="/accounts"
+          element={
+            <PrivateRoute>
+              <AccountsDashboard />
             </PrivateRoute>
           }
         />
