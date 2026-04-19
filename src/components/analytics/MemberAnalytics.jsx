@@ -1,238 +1,298 @@
-import React, { useMemo, useState } from "react";
-import "../analytics/Analytics.css";
-import { FiUsers, FiBriefcase, FiTool, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import React, { useMemo } from "react";
+import "./MemberAnalytics.css";
+import { FiUsers, FiCheckCircle } from "react-icons/fi";
+import {
+  PieChart, Pie, Cell,
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend
+} from 'recharts';
+
+// Custom tooltip for recharts
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip">
+        <p className="label">{label || payload[0].name}</p>
+        <p className="value">
+          <span
+            className="tooltip-dot"
+            style={{ backgroundColor: payload[0].color || payload[0].payload.fill }}
+          ></span>
+          Count: {payload[0].value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+const CHART_COLORS = ['#3f51b5', '#00bcd4', '#4caf50', '#ff9800', '#e91e63', '#9c27b0', '#f44336', '#607d8b'];
 
 function MemberAnalytics({ members }) {
-  const [expandedSections, setExpandedSections] = useState({
-    skills: true,
-    career: true
-  });
-
   const totalMembers = members.length;
 
-  const { roleCounts, skillCounts, careerCounts, topSkills, topCareers } = useMemo(() => {
-    const rCounts = {};
-    const sCounts = {};
-    const cCounts = {};
+  const calculateAge = (dob) => {
+    if (!dob) return null;
+    const birth = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const {
+    roleData,
+    ageData,
+    topSkills,
+    topCareers,
+    educationData,
+    departmentData,
+    avgCompletion
+  } = useMemo(() => {
+    if (totalMembers === 0) return {};
+
+    const roleCounts = {};
+    const ageCounts = { "Under 20": 0, "20-30": 0, "31-40": 0, "41-50": 0, "50+": 0 };
+    const skillCounts = {};
+    const careerCounts = {};
+    const eduCounts = {};
+    const deptCounts = {};
+
+    let totalCompletion = 0;
 
     members.forEach((member) => {
-      // Role Count
+      // 1. Role Count
       const role = member.role || "Unknown";
-      rCounts[role] = (rCounts[role] || 0) + 1;
+      roleCounts[role] = (roleCounts[role] || 0) + 1;
 
-      // Skill Count
+      // 2. Age Demographics
+      if (member.dateOfBirth) {
+        const age = calculateAge(member.dateOfBirth);
+        if (age < 20) ageCounts["Under 20"]++;
+        else if (age <= 30) ageCounts["20-30"]++;
+        else if (age <= 40) ageCounts["31-40"]++;
+        else if (age <= 50) ageCounts["41-50"]++;
+        else ageCounts["50+"]++;
+      }
+
+      // 3. Skills & Careers
       if (member.skills && Array.isArray(member.skills)) {
-        member.skills.forEach((skill) => {
-          const s = String(skill).trim();
-          if (s) sCounts[s] = (sCounts[s] || 0) + 1;
-        });
+        member.skills.forEach(s => skillCounts[s] = (skillCounts[s] || 0) + 1);
+      }
+      if (member.career && Array.isArray(member.career)) {
+        member.career.forEach(c => careerCounts[c] = (careerCounts[c] || 0) + 1);
       }
 
-      // Career Count
-      if (member.career && Array.isArray(member.career)) {
-        member.career.forEach((career) => {
-          const c = String(career).trim();
-          if (c) cCounts[c] = (cCounts[c] || 0) + 1;
-        });
+      // 4. Education & Department
+      if (member.education && Array.isArray(member.education)) {
+        member.education.forEach(e => eduCounts[e] = (eduCounts[e] || 0) + 1);
       }
+      if (member.educationalDepartment) {
+        const dept = member.educationalDepartment;
+        deptCounts[dept] = (deptCounts[dept] || 0) + 1;
+      }
+
+      // 5. Profile Completion %
+      let filledFields = 0;
+      const keyFields = [member.photoUrl, member.phone, member.dateOfBirth, member.educationalDepartment];
+      keyFields.forEach(f => { if (f) filledFields++; });
+      if (member.education?.length) filledFields++;
+      if (member.career?.length) filledFields++;
+
+      const memberCompletion = (filledFields / 6) * 100;
+      totalCompletion += memberCompletion;
     });
 
-    // Sort and get top items
-    const sortedSkills = Object.entries(sCounts).sort((a, b) => b[1] - a[1]);
-    const sortedCareers = Object.entries(cCounts).sort((a, b) => b[1] - a[1]);
+    // Format Data for Recharts
+    const formatPieData = (dict) => Object.keys(dict).map(k => ({ name: k, value: dict[k] })).filter(d => d.value > 0);
+    const formatBarData = (dict) => Object.keys(dict).map(k => ({ name: k, value: dict[k] })).sort((a, b) => b.value - a.value).slice(0, 5);
 
-    return { 
-      roleCounts: rCounts, 
-      skillCounts: sCounts, 
-      careerCounts: cCounts,
-      topSkills: sortedSkills.slice(0, 5),
-      topCareers: sortedCareers.slice(0, 5)
+    return {
+      roleData: formatPieData(roleCounts),
+      ageData: Object.keys(ageCounts).map(k => ({ name: k, value: ageCounts[k] })).filter(d => d.value > 0),
+      topSkills: formatBarData(skillCounts),
+      topCareers: formatBarData(careerCounts),
+      educationData: formatPieData(eduCounts),
+      departmentData: formatPieData(deptCounts),
+      avgCompletion: (totalCompletion / totalMembers).toFixed(0)
     };
-  }, [members]);
+  }, [members, totalMembers]);
 
-  const totalSkillCount = Object.values(skillCounts).reduce((a, b) => a + b, 0);
-  const totalCareerCount = Object.values(careerCounts).reduce((a, b) => a + b, 0);
-
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
-
-  // Get color based on role
-  const getRoleColor = (role) => {
-    const colors = {
-      'Associate': '#4caf50',
-      'Member': '#2196f3',
-      'GuestMember': '#9e9e9e',
-      'District Secretary': '#673ab7',
-      'District President': '#ff9800',
-      'State President': '#e53935'
-    };
-    return colors[role] || '#3f51b5';
-  };
+  if (totalMembers === 0) {
+    return (
+      <div className="analytics-inner-container">
+        <div className="analytics-empty-state">
+          <FiUsers size={48} color="#bdc3c7" />
+          <p>Not enough members data available for analytics yet.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="analytics-inner-container">
-      {/* Summary Cards with Icons */}
-      <div className="analytics-cards">
-        <div className="analytics-card total-card">
-          <div className="card-icon">
-            <FiUsers size={24} />
-          </div>
-          <div className="card-content">
-            <h3>Total Members</h3>
-            <p className="total-count">{totalMembers}</p>
-          </div>
-        </div>
+      <div className="bento-grid">
 
-        {Object.entries(roleCounts).map(([role, count]) => (
-          <div 
-            className="analytics-card role-card" 
-            key={role}
-            style={{ borderLeft: `4px solid ${getRoleColor(role)}` }}
-          >
-            <div className="card-content">
-              <h3>{role}</h3>
-              <p className="role-count">{count}</p>
-              <span className="role-percentage">
-                {((count / totalMembers) * 100).toFixed(1)}%
-              </span>
+        {/* KPI: Total Members */}
+        <div className="bento-item bento-kpi primary-kpi">
+          <div className="kpi-wrapper">
+            <p className="kpi-value">{totalMembers}</p>
+            <div className="kpi-label">
+              <FiUsers /> Total Members
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Summary Stats */}
-      <div className="analytics-summary-stats">
-        <div className="stat-item">
-          <FiTool className="stat-icon" />
-          <span>Total Skills: {totalSkillCount}</span>
         </div>
-        <div className="stat-item">
-          <FiBriefcase className="stat-icon" />
-          <span>Total Careers: {totalCareerCount}</span>
-        </div>
-      </div>
 
-      {/* Two-Column Lists with Expand/Collapse */}
-      <div className="analytics-two-columns">
-        {/* Skills List */}
-        <div className="analytics-column">
-          <div 
-            className="column-header" 
-            onClick={() => toggleSection('skills')}
-          >
-            <h3>Skills Distribution</h3>
-            {expandedSections.skills ? <FiChevronUp /> : <FiChevronDown />}
-          </div>
-          
-          {/* Top Skills Preview */}
-          {!expandedSections.skills && (
-            <div className="top-items-preview">
-              {topSkills.map(([skill, count]) => (
-                <div key={skill} className="preview-item">
-                  <span className="preview-label">{skill}</span>
-                  <span className="preview-count">{count}</span>
-                </div>
-              ))}
-              {Object.keys(skillCounts).length > 5 && (
-                <div className="more-indicator">
-                  +{Object.keys(skillCounts).length - 5} more
-                </div>
-              )}
+        {/* KPI: Profile Completion */}
+        <div className="bento-item bento-kpi secondary-kpi">
+          <div className="kpi-wrapper">
+            <p className="kpi-value">{avgCompletion}%</p>
+            <div className="kpi-label">
+              <FiCheckCircle /> Avg. Profile Completion
             </div>
-          )}
-
-          {/* Full List */}
-          <div className={`expandable-content ${expandedSections.skills ? 'expanded' : ''}`}>
-            <ul>
-              {Object.entries(skillCounts)
-                .sort((a, b) => b[1] - a[1])
-                .map(([skill, count]) => {
-                  const percentage = ((count / totalSkillCount) * 100).toFixed(1);
-                  return (
-                    <li key={skill} className="distribution-item">
-                      <div className="item-info">
-                        <strong>{skill}</strong>
-                        <span className="item-count">{count}</span>
-                      </div>
-                      <div className="progress-bar-container">
-                        <div 
-                          className="progress-bar" 
-                          style={{ width: `${percentage}%` }}
-                        ></div>
-                        <span className="percentage">{percentage}%</span>
-                      </div>
-                    </li>
-                  );
-                })}
-            </ul>
           </div>
         </div>
 
-        {/* Career List */}
-        <div className="analytics-column">
-          <div 
-            className="column-header" 
-            onClick={() => toggleSection('career')}
-          >
-            <h3>Career Distribution</h3>
-            {expandedSections.career ? <FiChevronUp /> : <FiChevronDown />}
+        {/* Chart: Role Distribution */}
+        <div className="bento-item bento-chart">
+          <div className="bento-header">
+            <h3>Role Distribution</h3>
           </div>
-
-          {/* Top Careers Preview */}
-          {!expandedSections.career && (
-            <div className="top-items-preview">
-              {topCareers.map(([career, count]) => (
-                <div key={career} className="preview-item">
-                  <span className="preview-label">{career}</span>
-                  <span className="preview-count">{count}</span>
-                </div>
-              ))}
-              {Object.keys(careerCounts).length > 5 && (
-                <div className="more-indicator">
-                  +{Object.keys(careerCounts).length - 5} more
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Full List */}
-          <div className={`expandable-content ${expandedSections.career ? 'expanded' : ''}`}>
-            <ul>
-              {Object.entries(careerCounts)
-                .sort((a, b) => b[1] - a[1])
-                .map(([career, count]) => {
-                  const percentage = ((count / totalCareerCount) * 100).toFixed(1);
-                  return (
-                    <li key={career} className="distribution-item">
-                      <div className="item-info">
-                        <strong>{career}</strong>
-                        <span className="item-count">{count}</span>
-                      </div>
-                      <div className="progress-bar-container">
-                        <div 
-                          className="progress-bar" 
-                          style={{ width: `${percentage}%` }}
-                        ></div>
-                        <span className="percentage">{percentage}%</span>
-                      </div>
-                    </li>
-                  );
-                })}
-            </ul>
+          <div className="chart-container">
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={roleData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {roleData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+                <Legend verticalAlign="bottom" height={36} />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
         </div>
+
+        {/* Chart: Age Demographics */}
+        <div className="bento-item bento-chart">
+          <div className="bento-header">
+            <h3>Age Demographics</h3>
+          </div>
+          <div className="chart-container">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={ageData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e0e4ea" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(63, 81, 181, 0.05)' }} />
+                <Bar dataKey="value" fill="#00bcd4" radius={[4, 4, 0, 0]} barSize={40} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Chart: Top Skills */}
+        <div className="bento-item bento-chart">
+          <div className="bento-header">
+            <h3>Top 5 Skills</h3>
+          </div>
+          <div className="chart-container">
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={topSkills} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e0e4ea" />
+                <XAxis type="number" axisLine={false} tickLine={false} />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={80} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(63, 81, 181, 0.05)' }} />
+                <Bar dataKey="value" fill="#3f51b5" radius={[0, 4, 4, 0]} barSize={24} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Chart: Top Careers */}
+        <div className="bento-item bento-chart">
+          <div className="bento-header">
+            <h3>Top 5 Careers</h3>
+          </div>
+          <div className="chart-container">
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={topCareers} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e0e4ea" />
+                <XAxis type="number" axisLine={false} tickLine={false} />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={80} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(63, 81, 181, 0.05)' }} />
+                <Bar dataKey="value" fill="#ff9800" radius={[0, 4, 4, 0]} barSize={24} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Chart: Education Breakdown */}
+        <div className="bento-item bento-chart">
+          <div className="bento-header">
+            <h3>Education Level Breakdown</h3>
+          </div>
+          <div className="chart-container">
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={educationData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={90}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {educationData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[(index + 2) % CHART_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Chart: Education Department */}
+        <div className="bento-item bento-chart">
+          <div className="bento-header">
+            <h3>Educational Departments</h3>
+          </div>
+          <div className="chart-container">
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={departmentData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={90}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {departmentData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[(index + 4) % CHART_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+                <Legend verticalAlign="bottom" height={36} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
       </div>
-
-      {/* Empty State */}
-      {totalMembers === 0 && (
-        <div className="analytics-empty-state">
-          <p>No members data available for analytics</p>
-        </div>
-      )}
     </div>
   );
 }

@@ -237,6 +237,7 @@ const MemberForm = ({
             required
           >
             <option value="Associate">Associate</option>
+            <option value="Guest Associate">Guest Associate</option>
             <option value="Member">Member</option>
             <option value="GuestMember">Guest Member</option>
             <option value="District Secretary">District Secretary</option>

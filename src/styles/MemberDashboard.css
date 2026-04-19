@@ -364,7 +364,7 @@
 }
 
 .filter-section.visible {
-  max-height: 200px;
+  max-height: 800px;
   opacity: 1;
   transform: translateY(0);
   margin-bottom: 20px;
@@ -375,10 +375,10 @@
   border: 1px solid #e0e4ea;
   padding: 20px;
   border-radius: 12px;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
-  align-items: flex-end;
-  flex-wrap: wrap;
+  align-items: end;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -601,6 +601,7 @@
 /* Role-based card top borders */
 .member-simple-card.role-Associate { border-top: 3px solid #4CAF50; }
 .member-simple-card.role-Member { border-top: 3px solid #2196F3; }
+.member-simple-card.role-GuestAssociate { border-top: 3px solid #E91E63; }
 .member-simple-card.role-GuestMember { border-top: 3px solid #FF9800; }
 .member-simple-card.role-DistrictSecretary { border-top: 3px solid #9C27B0; }
 .member-simple-card.role-DistrictPresident { border-top: 3px solid #F44336; }

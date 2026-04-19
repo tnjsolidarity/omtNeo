@@ -65,6 +65,9 @@
 .role-Member {
   border-top-color: #2196F3;
 }
+.role-GuestAssociate {
+  border-top-color: #E91E63;
+}
 .role-GuestMember {
   border-top-color: #FF9800;
 }

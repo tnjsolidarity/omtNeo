@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import { FiX } from "react-icons/fi";
+import { FiX, FiCalendar } from "react-icons/fi";
 import { getMembers } from "../../services/memberService";
 import "./EventForm.css";
 
@@ -55,7 +55,7 @@ function EventForm({
   const [members, setMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   // State for formatted date displays
   const [formattedStartDate, setFormattedStartDate] = useState("");
   const [formattedEndDate, setFormattedEndDate] = useState("");
@@ -85,20 +85,20 @@ function EventForm({
   const handleStartDateChange = (e) => {
     let inputValue = e.target.value;
     let cleaned = inputValue.replace(/\D/g, "");
-    
+
     if (cleaned.length >= 3) {
       cleaned = cleaned.slice(0, 2) + "/" + cleaned.slice(2);
     }
     if (cleaned.length >= 6) {
       cleaned = cleaned.slice(0, 5) + "/" + cleaned.slice(5, 9);
     }
-    
+
     if (cleaned.length > 10) {
       cleaned = cleaned.slice(0, 10);
     }
-    
+
     setFormattedStartDate(cleaned);
-    
+
     if (cleaned.length === 10) {
       const storageDate = parseDateForStorage(cleaned);
       if (storageDate) {
@@ -115,20 +115,20 @@ function EventForm({
   const handleEndDateChange = (e) => {
     let inputValue = e.target.value;
     let cleaned = inputValue.replace(/\D/g, "");
-    
+
     if (cleaned.length >= 3) {
       cleaned = cleaned.slice(0, 2) + "/" + cleaned.slice(2);
     }
     if (cleaned.length >= 6) {
       cleaned = cleaned.slice(0, 5) + "/" + cleaned.slice(5, 9);
     }
-    
+
     if (cleaned.length > 10) {
       cleaned = cleaned.slice(0, 10);
     }
-    
+
     setFormattedEndDate(cleaned);
-    
+
     if (cleaned.length === 10) {
       const storageDate = parseDateForStorage(cleaned);
       if (storageDate) {
@@ -148,7 +148,7 @@ function EventForm({
     } else {
       setFormattedStartDate("");
     }
-    
+
     if (form.endDate) {
       setFormattedEndDate(formatDateForDisplay(form.endDate));
     } else {
@@ -179,10 +179,10 @@ function EventForm({
         setMembersLoading(false);
       }
     };
-    
+
     fetchMembers();
   }, []);
-  
+
   const selectedAssignedTo = members.find(m => m.value === form.assignedTo);
   const selectedPlace = PLACE_OPTIONS.find(p => p.value === form.place);
 
@@ -208,7 +208,7 @@ function EventForm({
           <input
             type="text"
             value={form.name || ""}
-            onChange={(e) => setForm({...form, name: e.target.value})}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
             placeholder="Enter event name"
             required
           />
@@ -222,7 +222,7 @@ function EventForm({
             classNamePrefix="react-select"
             options={PRIORITY_OPTIONS}
             value={PRIORITY_OPTIONS.find(p => p.value === form.priority)}
-            onChange={(selected) => setForm({...form, priority: selected?.value || "Medium"})}
+            onChange={(selected) => setForm({ ...form, priority: selected?.value || "Medium" })}
             placeholder="Select priority"
             styles={customSelectStyles}
           />
@@ -236,7 +236,7 @@ function EventForm({
             classNamePrefix="react-select"
             options={STATUS_OPTIONS}
             value={STATUS_OPTIONS.find(s => s.value === form.status)}
-            onChange={(selected) => setForm({...form, status: selected?.value || "Planning"})}
+            onChange={(selected) => setForm({ ...form, status: selected?.value || "Planning" })}
             placeholder="Select status"
             styles={customSelectStyles}
           />
@@ -250,7 +250,7 @@ function EventForm({
             classNamePrefix="react-select"
             options={PLACE_OPTIONS}
             value={selectedPlace}
-            onChange={(selected) => setForm({...form, place: selected?.value || ""})}
+            onChange={(selected) => setForm({ ...form, place: selected?.value || "" })}
             placeholder="Select or search place"
             isClearable
             styles={customSelectStyles}
@@ -260,7 +260,7 @@ function EventForm({
         {/* Start Date */}
         <div className="form-field">
           <label>Start Date</label>
-          <div className="date-field-container">
+          <div className="date-field-container" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <input
               type="text"
               placeholder="DD/MM/YYYY"
@@ -268,14 +268,28 @@ function EventForm({
               onChange={handleStartDateChange}
               maxLength={10}
               className="date-input"
+              style={{ width: '100%', paddingRight: '40px' }}
             />
+            <div style={{ position: 'absolute', right: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px' }}>
+              <input
+                type="date"
+                value={form.startDate || ""}
+                onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                onClick={(e) => {
+                  try { e.target.showPicker(); } catch (err) { }
+                }}
+                style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 2 }}
+                title="Select Date"
+              />
+              <FiCalendar size={18} color="#64748b" style={{ zIndex: 1 }} />
+            </div>
           </div>
         </div>
 
         {/* End Date */}
         <div className="form-field">
           <label>End Date</label>
-          <div className="date-field-container">
+          <div className="date-field-container" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <input
               type="text"
               placeholder="DD/MM/YYYY"
@@ -283,7 +297,21 @@ function EventForm({
               onChange={handleEndDateChange}
               maxLength={10}
               className="date-input"
+              style={{ width: '100%', paddingRight: '40px' }}
             />
+            <div style={{ position: 'absolute', right: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px' }}>
+              <input
+                type="date"
+                value={form.endDate || ""}
+                onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                onClick={(e) => {
+                  try { e.target.showPicker(); } catch (err) { }
+                }}
+                style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 2 }}
+                title="Select Date"
+              />
+              <FiCalendar size={18} color="#64748b" style={{ zIndex: 1 }} />
+            </div>
           </div>
         </div>
 
@@ -298,7 +326,7 @@ function EventForm({
               classNamePrefix="react-select"
               options={members}
               value={selectedAssignedTo}
-              onChange={(selected) => setForm({...form, assignedTo: selected?.value || ""})}
+              onChange={(selected) => setForm({ ...form, assignedTo: selected?.value || "" })}
               placeholder={membersLoading ? "Loading members..." : "Select assignee"}
               isClearable
               isLoading={membersLoading}
@@ -312,7 +340,7 @@ function EventForm({
           <label>Description</label>
           <textarea
             value={form.description || ""}
-            onChange={(e) => setForm({...form, description: e.target.value})}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
             placeholder="Enter event description"
             rows="3"
           />

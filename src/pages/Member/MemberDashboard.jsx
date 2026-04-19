@@ -43,6 +43,12 @@ function MemberDashboard() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [roleFilter, setRoleFilter] = useState("");
   const [skillFilter, setSkillFilter] = useState([]);
+  const [careerFilter, setCareerFilter] = useState([]);
+  const [educationFilter, setEducationFilter] = useState([]);
+  const [departmentFilter, setDepartmentFilter] = useState([]);
+  const [ageRangeFilter, setAgeRangeFilter] = useState("");
+  const [passedOutYearFilter, setPassedOutYearFilter] = useState({ min: "", max: "" });
+  const [profileCompletionFilter, setProfileCompletionFilter] = useState("");
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
 
   const [sortConfig, setSortConfig] = useState({
@@ -50,6 +56,20 @@ function MemberDashboard() {
     direction: 'asc'
   });
   const [sortOpen, setSortOpen] = useState(false);
+
+  // Add this helper function near the top of your component, after the state declarations
+  const calculateAge = (dob) => {
+    if (!dob) return null;
+    const birth = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
   const fetchMembers = async () => {
     try {
@@ -76,6 +96,7 @@ function MemberDashboard() {
 
   const roleOptions = [
     { value: "Associate", label: "Associate" },
+    { value: "Guest Associate", label: "Guest Associate" },
     { value: "Member", label: "Member" },
     { value: "GuestMember", label: "Guest Member" },
     { value: "District Secretary", label: "District Secretary" },
@@ -171,8 +192,9 @@ function MemberDashboard() {
     'District President': 2,
     'District Secretary': 3,
     'Member': 4,
-    'Associate': 5,
-    'GuestMember': 6
+    'Guest Associate': 5,
+    'Associate': 6,
+    'GuestMember': 7
   };
 
   const handleSubmit = async () => {
@@ -423,28 +445,58 @@ function MemberDashboard() {
         )
         : true;
 
-    return matchesSearch && matchesRole && matchesSkills;
+    const matchesCareer =
+      careerFilter.length > 0
+        ? careerFilter.every((selected) => member.career?.includes(selected.value))
+        : true;
+
+    const matchesEducation =
+      educationFilter.length > 0
+        ? educationFilter.every((selected) => member.education?.includes(selected.value))
+        : true;
+
+    const matchesDepartment =
+      departmentFilter.length > 0
+        ? departmentFilter.some((selected) => member.educationalDepartment === selected.value)
+        : true;
+
+    const age = calculateAge(member.dateOfBirth);
+    let matchesAge = true;
+    if (ageRangeFilter === "Under 20") matchesAge = age !== null && age < 20;
+    else if (ageRangeFilter === "20-30") matchesAge = age !== null && age >= 20 && age <= 30;
+    else if (ageRangeFilter === "31-40") matchesAge = age !== null && age >= 31 && age <= 40;
+    else if (ageRangeFilter === "41-50") matchesAge = age !== null && age >= 41 && age <= 50;
+    else if (ageRangeFilter === "50+") matchesAge = age !== null && age > 50;
+
+    let matchesYear = true;
+    if (passedOutYearFilter.min) matchesYear = matchesYear && member.passedOutYear >= parseInt(passedOutYearFilter.min);
+    if (passedOutYearFilter.max) matchesYear = matchesYear && member.passedOutYear <= parseInt(passedOutYearFilter.max);
+
+    let matchesCompletion = true;
+    if (profileCompletionFilter === "Complete") {
+      matchesCompletion = !!(
+        member.name && member.role && member.skills?.length > 0 && 
+        member.education?.length > 0 && member.educationalDepartment && 
+        member.passedOutYear && member.photoUrl && member.phone && 
+        member.dateOfBirth && member.career?.length > 0
+      );
+    } else if (profileCompletionFilter === "Incomplete") {
+      matchesCompletion = !(
+        member.name && member.role && member.skills?.length > 0 && 
+        member.education?.length > 0 && member.educationalDepartment && 
+        member.passedOutYear && member.photoUrl && member.phone && 
+        member.dateOfBirth && member.career?.length > 0
+      );
+    }
+
+    return matchesSearch && matchesRole && matchesSkills && matchesCareer && matchesEducation && matchesDepartment && matchesAge && matchesYear && matchesCompletion;
   });
 
   const sortedAndFilteredMembers = getSortedMembers(filteredMembers);
 
-  const isFilterActive = roleFilter !== "" || skillFilter.length > 0;
+  const isFilterActive = roleFilter !== "" || skillFilter.length > 0 || careerFilter.length > 0 || educationFilter.length > 0 || departmentFilter.length > 0 || ageRangeFilter !== "" || passedOutYearFilter.min !== "" || passedOutYearFilter.max !== "" || profileCompletionFilter !== "";
   const isAnalyticsActive = analyticsOpen;
   const isSearchActive = searchTerm !== "";
-
-  // Add this helper function near the top of your component, after the state declarations
-  const calculateAge = (dob) => {
-    if (!dob) return null;
-    const birth = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    return age;
-  };
 
   return (
     <div className="dashboard-fullpage" ref={formRef}>
@@ -607,11 +659,133 @@ function MemberDashboard() {
                 />
               </div>
 
+              <div className="filter-group">
+                <label>Careers</label>
+                <Select
+                  options={careerOptions}
+                  isMulti
+                  value={careerFilter}
+                  onChange={(selected) => setCareerFilter(selected || [])}
+                  placeholder="Filter by career..."
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    control: (base) => ({ ...base, minHeight: '38px' })
+                  }}
+                />
+              </div>
+
+              <div className="filter-group">
+                <label>Education Level</label>
+                <Select
+                  options={educationOptions}
+                  isMulti
+                  value={educationFilter}
+                  onChange={(selected) => setEducationFilter(selected || [])}
+                  placeholder="Filter by education..."
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    control: (base) => ({ ...base, minHeight: '38px' })
+                  }}
+                />
+              </div>
+
+              <div className="filter-group">
+                <label>Educational Department</label>
+                <Select
+                  options={departmentOptions}
+                  isMulti
+                  value={departmentFilter}
+                  onChange={(selected) => setDepartmentFilter(selected || [])}
+                  placeholder="Filter by department..."
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    control: (base) => ({ ...base, minHeight: '38px' })
+                  }}
+                />
+              </div>
+
+              <div className="filter-group">
+                <label>Age Range</label>
+                <Select
+                  options={[
+                    { value: "Under 20", label: "Under 20" },
+                    { value: "20-30", label: "20-30" },
+                    { value: "31-40", label: "31-40" },
+                    { value: "41-50", label: "41-50" },
+                    { value: "50+", label: "50+" }
+                  ]}
+                  value={ageRangeFilter ? { value: ageRangeFilter, label: ageRangeFilter } : null}
+                  onChange={(selected) => setAgeRangeFilter(selected ? selected.value : "")}
+                  placeholder="Filter by age..."
+                  isClearable
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    control: (base) => ({ ...base, minHeight: '38px' })
+                  }}
+                />
+              </div>
+
+              <div className="filter-group year-range-group">
+                <label>Passed Out Year</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={passedOutYearFilter.min}
+                    onChange={(e) => setPassedOutYearFilter(prev => ({ ...prev, min: e.target.value }))}
+                    className="year-input"
+                    style={{ width: '80px', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={passedOutYearFilter.max}
+                    onChange={(e) => setPassedOutYearFilter(prev => ({ ...prev, max: e.target.value }))}
+                    className="year-input"
+                    style={{ width: '80px', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  />
+                </div>
+              </div>
+
+              <div className="filter-group">
+                <label>Profile Completion</label>
+                <Select
+                  options={[
+                    { value: "Complete", label: "100% Complete" },
+                    { value: "Incomplete", label: "Missing Information" }
+                  ]}
+                  value={profileCompletionFilter ? { value: profileCompletionFilter, label: profileCompletionFilter === "Complete" ? "100% Complete" : "Missing Information" } : null}
+                  onChange={(selected) => setProfileCompletionFilter(selected ? selected.value : "")}
+                  placeholder="Profile status..."
+                  isClearable
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    control: (base) => ({ ...base, minHeight: '38px' })
+                  }}
+                />
+              </div>
+
               <button
                 className="clear-filters-btn"
                 onClick={() => {
                   setRoleFilter("");
                   setSkillFilter([]);
+                  setCareerFilter([]);
+                  setEducationFilter([]);
+                  setDepartmentFilter([]);
+                  setAgeRangeFilter("");
+                  setPassedOutYearFilter({ min: "", max: "" });
+                  setProfileCompletionFilter("");
                   setSearchTerm("");
                   scrollToTop();
                 }}

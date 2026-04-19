@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FiEdit2, FiTrash2, FiCalendar, FiFlag, FiUser, FiMapPin } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiCalendar, FiFlag, FiUser, FiMapPin, FiCheckSquare } from "react-icons/fi";
 import "./EventCard.css";
 
 function EventCard({ event, onEdit, onDelete, projectId, activityId }) {
@@ -56,6 +56,7 @@ function EventCard({ event, onEdit, onDelete, projectId, activityId }) {
 
   // Get progress value - use event's own progress if available, otherwise use task progress
   const getProgress = () => {
+    if (event.taskStats && event.taskStats.total === 0) return 100;
     if (event.progress !== undefined) return event.progress;
     if (event.taskStats && event.taskStats.progress !== undefined) return event.taskStats.progress;
     return 0;
@@ -160,6 +161,14 @@ function EventCard({ event, onEdit, onDelete, projectId, activityId }) {
             <span className="detail-value">{assigneeName}</span>
           </div>
         )}
+
+        <div className="event-detail">
+          <span className="detail-label">
+            <FiCheckSquare size={12} />
+            Tasks:
+          </span>
+          <span className="detail-value">{event.taskStats ? event.taskStats.total : 0}</span>
+        </div>
         
         <div className="event-detail">
           <span className="detail-label">
