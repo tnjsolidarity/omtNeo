@@ -278,54 +278,89 @@ const MemberForm = ({
           />
         </div>
 
-        {/* Education Field */}
-        <div className="form-field">
-          <label>Education</label>
-          <Select
-            isMulti
-            name="education"
-            options={educationOptions}
-            value={form.education || []}
-            onChange={(selected) => setForm({ ...form, education: selected || [] })}
-            placeholder="Select education"
-            menuPortalTarget={document.body}
-            className="react-select-container"
-            classNamePrefix="react-select"
-          />
-        </div>
+        {/* Education History Section */}
+        <div className="education-history-section">
+          <div className="section-header">
+            <label>Education History</label>
+            <button
+              type="button"
+              className="add-edu-btn"
+              onClick={() => {
+                const newEdu = [...(form.education || []), { degree: "", department: "", passedOutYear: null }];
+                setForm({ ...form, education: newEdu });
+              }}
+            >
+              + Add Education
+            </button>
+          </div>
 
-        {/* Educational Department */}
-        <div className="form-field">
-          <label>Educational Department</label>
-          <Select
-            name="educationalDepartment"
-            options={departmentOptions}
-            value={departmentOptions.find(d => d.value === form.educationalDepartment) || null}
-            onChange={(selected) =>
-              setForm({ ...form, educationalDepartment: selected ? selected.value : "" })
-            }
-            placeholder="Select Department"
-            isClearable
-            menuPortalTarget={document.body}
-            className="react-select-container"
-            classNamePrefix="react-select"
-          />
-        </div>
-
-        {/* Passed Out Year */}
-        <div className="form-field">
-          <label>Passed Out Year</label>
-          <Select
-            name="passedOutYear"
-            options={passedOutYearOptions}
-            value={passedOutYearOptions.find(y => y.value === form.passedOutYear) || null}
-            onChange={handlePassedOutYearChange}
-            placeholder="Select Passed Out Year"
-            isClearable
-            menuPortalTarget={document.body}
-            className="react-select-container"
-            classNamePrefix="react-select"
-          />
+          {(form.education || []).length === 0 ? (
+            <p className="no-edu-msg">No education details added yet.</p>
+          ) : (
+            <div className="edu-list">
+              {form.education.map((edu, index) => (
+                <div key={index} className="edu-item-card">
+                  <div className="edu-item-header">
+                    <span>Education #{index + 1}</span>
+                    <button
+                      type="button"
+                      className="remove-edu-btn"
+                      onClick={() => {
+                        const newEdu = form.education.filter((_, i) => i !== index);
+                        setForm({ ...form, education: newEdu });
+                      }}
+                    >
+                      <FiX size={14} /> Remove
+                    </button>
+                  </div>
+                  <div className="edu-item-grid">
+                    <div className="edu-field">
+                      <label>Degree</label>
+                      <Select
+                        options={educationOptions}
+                        value={educationOptions.find(o => o.value === edu.degree) || null}
+                        onChange={(selected) => {
+                          const newEdu = [...form.education];
+                          newEdu[index].degree = selected ? selected.value : "";
+                          setForm({ ...form, education: newEdu });
+                        }}
+                        placeholder="Select degree"
+                        menuPortalTarget={document.body}
+                      />
+                    </div>
+                    <div className="edu-field">
+                      <label>Department</label>
+                      <Select
+                        options={departmentOptions}
+                        value={departmentOptions.find(o => o.value === edu.department) || null}
+                        onChange={(selected) => {
+                          const newEdu = [...form.education];
+                          newEdu[index].department = selected ? selected.value : "";
+                          setForm({ ...form, education: newEdu });
+                        }}
+                        placeholder="Select department"
+                        menuPortalTarget={document.body}
+                      />
+                    </div>
+                    <div className="edu-field">
+                      <label>Year</label>
+                      <Select
+                        options={passedOutYearOptions}
+                        value={passedOutYearOptions.find(o => o.value === edu.passedOutYear) || null}
+                        onChange={(selected) => {
+                          const newEdu = [...form.education];
+                          newEdu[index].passedOutYear = selected ? selected.value : null;
+                          setForm({ ...form, education: newEdu });
+                        }}
+                        placeholder="Year"
+                        menuPortalTarget={document.body}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="form-buttons">

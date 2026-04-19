@@ -85,21 +85,29 @@ function MemberAnalytics({ members }) {
         member.career.forEach(c => careerCounts[c] = (careerCounts[c] || 0) + 1);
       }
 
-      // 4. Education & Department
+      // 4. Education & Department (NEW: Array of objects)
       if (member.education && Array.isArray(member.education)) {
-        member.education.forEach(e => eduCounts[e] = (eduCounts[e] || 0) + 1);
-      }
-      if (member.educationalDepartment) {
-        const dept = member.educationalDepartment;
-        deptCounts[dept] = (deptCounts[dept] || 0) + 1;
+        member.education.forEach(edu => {
+          if (edu.degree) {
+            eduCounts[edu.degree] = (eduCounts[edu.degree] || 0) + 1;
+          }
+          if (edu.department) {
+            deptCounts[edu.department] = (deptCounts[edu.department] || 0) + 1;
+          }
+        });
       }
 
       // 5. Profile Completion %
       let filledFields = 0;
-      const keyFields = [member.photoUrl, member.phone, member.dateOfBirth, member.educationalDepartment];
+      const keyFields = [member.photoUrl, member.phone, member.dateOfBirth];
       keyFields.forEach(f => { if (f) filledFields++; });
-      if (member.education?.length) filledFields++;
-      if (member.career?.length) filledFields++;
+      if (member.education?.length > 0) {
+        filledFields++; // Education list present
+        // Check if the first entry is complete
+        if (member.education[0].department) filledFields++;
+        if (member.education[0].passedOutYear) filledFields++;
+      }
+      if (member.career?.length > 0) filledFields++;
 
       const memberCompletion = (filledFields / 6) * 100;
       totalCompletion += memberCompletion;

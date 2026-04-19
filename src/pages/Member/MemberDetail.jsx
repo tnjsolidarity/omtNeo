@@ -152,29 +152,23 @@ function MemberDetail() {
 
         {/* Education Section */}
         <div className="detail-section">
-          <h3>Education</h3>
+          <h3>Education History</h3>
           {member.education?.length > 0 ? (
-            <>
-              <div className="tags-container">
-                {member.education.map((edu, index) => (
-                  <span key={index} className="tag">{edu}</span>
+            <div className="education-list-detail">
+              {[...member.education]
+                .sort((a, b) => (b.passedOutYear || 0) - (a.passedOutYear || 0))
+                .map((edu, index) => (
+                  <div key={index} className="education-detail-item">
+                    <div className="edu-year-badge">{edu.passedOutYear || "N/A"}</div>
+                    <div className="edu-info">
+                      <div className="edu-degree">{edu.degree}</div>
+                      <div className="edu-dept">{edu.department}</div>
+                    </div>
+                  </div>
                 ))}
-              </div>
-              
-              {/* Educational Details */}
-              {(member.educationalDepartment || member.passedOutYear) && (
-                <div className="education-details">
-                  {member.educationalDepartment && (
-                    <p><strong>Department:</strong> {member.educationalDepartment}</p>
-                  )}
-                  {member.passedOutYear && (
-                    <p><strong>Passed Out Year:</strong> {member.passedOutYear}</p>
-                  )}
-                </div>
-              )}
-            </>
+            </div>
           ) : (
-            <p className="no-data">No education information</p>
+            <p className="no-data">No education information registered</p>
           )}
         </div>
 

@@ -191,6 +191,18 @@
   box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
 }
 
+/* Export button */
+.export-btn {
+  background-color: #27ae60;
+  color: white;
+}
+
+.export-btn:hover {
+  background-color: #219653;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.2);
+}
+
 /* Add button */
 .add-btn {
   background-color: #3f51b5;

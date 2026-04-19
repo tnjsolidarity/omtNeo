@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { FiUserPlus, FiArrowUp, FiArrowDown, FiChevronDown, FiPhone } from "react-icons/fi";
+import { FiUserPlus, FiArrowUp, FiArrowDown, FiChevronDown, FiPhone, FiDownload } from "react-icons/fi";
 import Select from "react-select";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -32,8 +32,6 @@ function MemberDashboard() {
     skills: [],
     career: [],
     education: [],
-    educationalDepartment: "",
-    passedOutYear: null,
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -150,6 +148,7 @@ function MemberDashboard() {
   const educationOptions = [
     { value: "BBA", label: "BBA" },
     { value: "BCom", label: "BCom" },
+    { value: "MCom", label: "MCom" },
     { value: "BE", label: "BE" },
     { value: "BSc", label: "BSc" },
     { value: "HSC", label: "HSC" },
@@ -167,7 +166,7 @@ function MemberDashboard() {
   ];
 
   const currentYear = new Date().getFullYear();
-  const passedOutYearOptions = Array.from({ length: 30 }, (_, i) => {
+  const passedOutYearOptions = Array.from({ length: 10 }, (_, i) => {
     const year = currentYear - i;
     return { value: year, label: year.toString() };
   });
@@ -217,8 +216,8 @@ function MemberDashboard() {
       if (form.career?.length) {
         formData.append('career', JSON.stringify(form.career.map(c => c.value)));
       }
-      if (form.education?.length) {
-        formData.append('education', JSON.stringify(form.education.map(e => e.value)));
+      if (form.education?.length > 0) {
+        formData.append('education', JSON.stringify(form.education));
       }
 
       // Append photo if exists
@@ -254,8 +253,6 @@ function MemberDashboard() {
       skills: [],
       career: [],
       education: [],
-      educationalDepartment: "",
-      passedOutYear: null,
     });
     setEditingId(null);
   };
@@ -276,11 +273,7 @@ function MemberDashboard() {
       career: member.career
         ? member.career.map((c) => ({ value: c, label: c }))
         : [],
-      education: member.education
-        ? member.education.map((e) => ({ value: e, label: e }))
-        : [],
-      educationalDepartment: member.educationalDepartment || "",
-      passedOutYear: member.passedOutYear || null,
+      education: member.education || [],
     });
     setEditingId(member._id);
     setFormOpen(true);
@@ -405,8 +398,12 @@ function MemberDashboard() {
 
       // Handle numeric fields
       if (sortConfig.key === 'passedOutYear') {
-        const yearA = a.passedOutYear || 0;
-        const yearB = b.passedOutYear || 0;
+        const getLatestYear = (m) => {
+          if (!m.education || m.education.length === 0) return 0;
+          return Math.max(...m.education.map(e => e.passedOutYear || 0));
+        };
+        const yearA = getLatestYear(a);
+        const yearB = getLatestYear(b);
         return sortConfig.direction === 'asc' ? yearA - yearB : yearB - yearA;
       }
 
@@ -452,12 +449,16 @@ function MemberDashboard() {
 
     const matchesEducation =
       educationFilter.length > 0
-        ? educationFilter.every((selected) => member.education?.includes(selected.value))
+        ? educationFilter.some((selected) =>
+          member.education?.some(edu => edu.degree === selected.value)
+        )
         : true;
 
     const matchesDepartment =
       departmentFilter.length > 0
-        ? departmentFilter.some((selected) => member.educationalDepartment === selected.value)
+        ? departmentFilter.some((selected) =>
+          member.education?.some(edu => edu.department === selected.value)
+        )
         : true;
 
     const age = calculateAge(member.dateOfBirth);
@@ -469,22 +470,24 @@ function MemberDashboard() {
     else if (ageRangeFilter === "50+") matchesAge = age !== null && age > 50;
 
     let matchesYear = true;
-    if (passedOutYearFilter.min) matchesYear = matchesYear && member.passedOutYear >= parseInt(passedOutYearFilter.min);
-    if (passedOutYearFilter.max) matchesYear = matchesYear && member.passedOutYear <= parseInt(passedOutYearFilter.max);
+    const latestYear = member.education && member.education.length > 0
+      ? Math.max(...member.education.map(e => e.passedOutYear || 0))
+      : 0;
+
+    if (passedOutYearFilter.min) matchesYear = matchesYear && latestYear >= parseInt(passedOutYearFilter.min);
+    if (passedOutYearFilter.max) matchesYear = matchesYear && latestYear <= parseInt(passedOutYearFilter.max);
 
     let matchesCompletion = true;
     if (profileCompletionFilter === "Complete") {
       matchesCompletion = !!(
-        member.name && member.role && member.skills?.length > 0 && 
-        member.education?.length > 0 && member.educationalDepartment && 
-        member.passedOutYear && member.photoUrl && member.phone && 
+        member.name && member.role && member.skills?.length > 0 &&
+        member.education?.length > 0 && member.photoUrl && member.phone &&
         member.dateOfBirth && member.career?.length > 0
       );
     } else if (profileCompletionFilter === "Incomplete") {
       matchesCompletion = !(
-        member.name && member.role && member.skills?.length > 0 && 
-        member.education?.length > 0 && member.educationalDepartment && 
-        member.passedOutYear && member.photoUrl && member.phone && 
+        member.name && member.role && member.skills?.length > 0 &&
+        member.education?.length > 0 && member.photoUrl && member.phone &&
         member.dateOfBirth && member.career?.length > 0
       );
     }
@@ -497,6 +500,51 @@ function MemberDashboard() {
   const isFilterActive = roleFilter !== "" || skillFilter.length > 0 || careerFilter.length > 0 || educationFilter.length > 0 || departmentFilter.length > 0 || ageRangeFilter !== "" || passedOutYearFilter.min !== "" || passedOutYearFilter.max !== "" || profileCompletionFilter !== "";
   const isAnalyticsActive = analyticsOpen;
   const isSearchActive = searchTerm !== "";
+
+  const handleExportExcel = () => {
+    if (sortedAndFilteredMembers.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    import('xlsx').then(XLSX => {
+      const dataToExport = sortedAndFilteredMembers.map(member => {
+        const age = calculateAge(member.dateOfBirth);
+        const isComplete = !!(
+          member.name && member.role && member.skills?.length > 0 &&
+          member.education?.length > 0 && member.educationalDepartment &&
+          member.passedOutYear && member.photoUrl && member.phone &&
+          member.dateOfBirth && member.career?.length > 0
+        ) ? "Yes" : "No";
+
+        const sortedEdu = [...(member.education || [])].sort((a, b) => (b.passedOutYear || 0) - (a.passedOutYear || 0));
+        const eduString = sortedEdu.map(e => `${e.degree} in ${e.department} (${e.passedOutYear})`).join(" | ");
+
+        return {
+          "Member ID": member.memberId || "",
+          "Name": member.name || "",
+          "Role": member.role || "",
+          "Phone": member.phone || "",
+          "Date of Birth": member.dateOfBirth ? member.dateOfBirth.split("T")[0] : "",
+          "Age": age !== null ? age : "",
+          "Skills": (member.skills || []).join(", "),
+          "Career": (member.career || []).join(", "),
+          "Education History": eduString,
+          "Profile Complete": isComplete,
+          "Created At": member.createdAt ? member.createdAt.split("T")[0] : ""
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Members");
+      XLSX.writeFile(workbook, "members_export.xlsx");
+    }).catch(err => {
+      console.error("Error loading xlsx library", err);
+      // Fallback or user prompt
+      alert("Error exporting to Excel. The module might still be installing, please wait a moment and try again.");
+    });
+  };
 
   return (
     <div className="dashboard-fullpage" ref={formRef}>
@@ -593,6 +641,14 @@ function MemberDashboard() {
                   sortConfig.direction === 'asc' ? <FiArrowUp /> : <FiArrowDown />
                 ) : null}
                 {isSortActive && !sortOpen && <span className="active-indicator"></span>}
+              </button>
+
+              <button
+                className="action-btn export-btn"
+                onClick={handleExportExcel}
+              >
+                <FiDownload size={18} />
+                Export
               </button>
 
               <button className="action-btn logout-btn" onClick={handleLogout}>
@@ -895,9 +951,12 @@ function MemberDashboard() {
                       )}
 
                       <div className="member-simple-career">
-                        <span className="career-label">Career:</span>
-                        {member.career?.length > 0 ? (
-                          <span className="career-value">{member.career.join(", ")}</span>
+                        <span className="career-label">Education:</span>
+                        {member.education?.length > 0 ? (
+                          <span className="career-value">
+                            {[...member.education].sort((a, b) => (b.passedOutYear || 0) - (a.passedOutYear || 0))[0].degree}
+                            {member.education.length > 1 && ` (+${member.education.length - 1} more)`}
+                          </span>
                         ) : (
                           <span className="career-value none">None</span>
                         )}

@@ -438,6 +438,134 @@
   transform: translateY(0);
 }
 
+/* ===== EDUCATION HISTORY SECTION ===== */
+.education-history-section {
+  grid-column: span 2;
+  margin-top: 10px;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3f51b5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.add-edu-btn {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.add-edu-btn:hover {
+  background-color: #32408f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(63, 81, 181, 0.2);
+}
+
+.no-edu-msg {
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+.edu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edu-item-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  animation: slideIn 0.2s ease-out;
+}
+
+.edu-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.edu-item-header span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.remove-edu-btn {
+  background: #fee2e2;
+  color: #ef4444;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.remove-edu-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.edu-item-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.edu-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.edu-field label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .edu-item-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .photo-upload-field {
   margin-bottom: 20px;
 }

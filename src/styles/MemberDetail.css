@@ -204,27 +204,56 @@
   font-size: 13px;
 }
 
-/* Compact education details */
-.education-details {
+/* Compact education history */
+.education-list-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-top: 10px;
-  padding: 12px;
-  background-color: #f9fafc;
-  border-radius: 6px;
+}
+
+.education-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #f9fafc;
+  padding: 12px 16px;
+  border-radius: 8px;
   border: 1px solid #eef2f6;
+  transition: all 0.2s;
 }
 
-.education-details p {
-  margin: 4px 0;
-  color: #2c3e50;
+.education-detail-item:hover {
+  border-color: #3f51b5;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.edu-year-badge {
+  background: #3f51b5;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
   font-size: 13px;
+  font-weight: 600;
+  min-width: 50px;
+  text-align: center;
 }
 
-.education-details strong {
-  color: #3f51b5;
-  margin-right: 8px;
+.edu-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.edu-degree {
+  font-size: 15px;
   font-weight: 600;
-  min-width: 100px;
-  display: inline-block;
+  color: #2c3e50;
+}
+
+.edu-dept {
+  font-size: 13px;
+  color: #7f8c8d;
 }
 
 /* Compact timestamps */
