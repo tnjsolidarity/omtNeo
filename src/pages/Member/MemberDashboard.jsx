@@ -130,27 +130,40 @@ function MemberDashboard() {
 
   const careerOptions = [
     { value: "Accountant", label: "Accountant" },
-    { value: "Building Renovation", label: "Building Renovation" },
+    { value: "Automotive Cybersecurity", label: "Automotive Cybersecurity" },
+    { value: "Construction and Design Company", label: "Construction and Design Company" },
     { value: "College Professor", label: "College Professor" },
     { value: "Construction Engineering", label: "Construction Engineering" },
     { value: "Catering", label: "Catering" },
+    { value: "Data Analyst", label: "Data Analyst" },
+    { value: "Engineering Solutions Company", label: "Engineering Solutions Company" },
     { value: "Home Automation", label: "Home Automation" },
+    { value: "Immigration Consultant", label: "Immigration Consultant" },
     { value: "Mobile Shop", label: "Mobile Shop" },
     { value: "Media Manager", label: "Media Manager" },
-    { value: "Procurement", label: "Procurement" },
+    { value: "Procurement Executive", label: "Procurement Executive" },
+    { value: "Quality Assurance", label: "Quality Assurance" },
     { value: "School Student", label: "School Student" },
     { value: "Site Supervisor", label: "Site Supervisor" },
     { value: "Software Developer", label: "Software Developer" },
-    { value: "Software Tester", label: "Software Tester" },
-    { value: "Startup Company", label: "Startup Company" },
+    { value: "Supplychain Associate", label: "Supplychain Associate" },
   ];
 
   const educationOptions = [
+    { value: "BA", label: "BA" },
+    { value: "MA", label: "MA" },
     { value: "BBA", label: "BBA" },
+    { value: "MBA", label: "MBA" },
+    { value: "BCA", label: "BCA" },
+    { value: "MCA", label: "MCA" },
     { value: "BCom", label: "BCom" },
     { value: "MCom", label: "MCom" },
     { value: "BE", label: "BE" },
+    { value: "ME", label: "ME" },
     { value: "BSc", label: "BSc" },
+    { value: "MSc", label: "MSc" },
+    { value: "BTech", label: "BTech" },
+    { value: "MTech", label: "MTech" },
     { value: "HSC", label: "HSC" },
     { value: "PhD", label: "PhD" },
   ];
@@ -158,15 +171,18 @@ function MemberDashboard() {
   const departmentOptions = [
     { value: "Computer Science", label: "Computer Science" },
     { value: "Corporate Secretaryship", label: "Corporate Secretaryship" },
-    { value: "Electronics", label: "Electronics" },
+    { value: "Electronics and Communication", label: "Electronics and Communication" },
+    { value: "English", label: "English" },
+    { value: "English Literature", label: "English Literature" },
     { value: "Food Technology", label: "Food Technology" },
     { value: "General", label: "General" },
     { value: "Management", label: "Management" },
     { value: "Mechanical", label: "Mechanical" },
+    { value: "Supplychain Operation", label: "Supplychain Operation" },
   ];
 
   const currentYear = new Date().getFullYear();
-  const passedOutYearOptions = Array.from({ length: 10 }, (_, i) => {
+  const passedOutYearOptions = Array.from({ length: 30 }, (_, i) => {
     const year = currentYear - i;
     return { value: year, label: year.toString() };
   });
