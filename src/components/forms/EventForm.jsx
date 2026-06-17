@@ -32,6 +32,7 @@ const PLACE_OPTIONS = [
   { value: "Jupiter Theater Main Road", label: "(Jupiter Theater-Burma Bazar-Anna Road) Meeting Point" },
   { value: "Kuppatheru Masjid", label: "Kuppatheru Masjid" },
   { value: "Maharnonmbuchavady Masjid", label: "Maharnonmbuchavady Masjid" },
+  { value: "Moulana Masjid Campus - Perambalur", label: "Moulana Masjid Campus - Perambalur" },
   { value: "Makka Masjid - Eeswari Nagar", label: "Makka Masjid - Eeswari Nagar" },
   { value: "MRG Engineering", label: "MRG Engineering" },
   { value: "Noor Masjid", label: "Noor Masjid" },
