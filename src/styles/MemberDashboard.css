@@ -27,9 +27,9 @@
 /* ===== STICKY HEADER ===== */
 .dashboard-header-sticky {
   flex-shrink: 0;
-  background: #fff;
-  border-bottom: 1px solid #e0e4ea;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: #e0e7ff !important;
+  border-bottom: 1px solid #c7d2fe !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   z-index: 200;
   padding: 12px 24px;
 }
@@ -383,15 +383,15 @@
 }
 
 .filter-panel {
-  background: white;
-  border: 1px solid #e0e4ea;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
   padding: 20px;
   border-radius: 12px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
   align-items: end;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
 }
 
 .filter-group {
@@ -553,19 +553,50 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   padding: 0 5px;
   font-size: 14px;
   color: #7f8c8d;
 }
 
-.current-sort {
-  background: #f8f9fa;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
+.total-members-count {
+  font-size: 15px;
+  font-weight: 500;
+  color: #2c3e50;
+  background: #e8f0fe;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #cce0ff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.total-members-count strong {
+  font-size: 18px;
   color: #3f51b5;
-  border: 1px solid #e0e4ea;
+  font-weight: 700;
+}
+
+.total-members-count {
+  font-size: 15px;
+  font-weight: 500;
+  color: #2c3e50;
+  background: #e8f0fe;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #cce0ff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.total-members-count strong {
+  font-size: 18px;
+  color: #3f51b5;
+  font-weight: 700;
 }
 
 /* ===== MEMBERS GRID ===== */
@@ -611,13 +642,33 @@
 }
 
 /* Role-based card top borders */
-.member-simple-card.role-Associate { border-top: 3px solid #4CAF50; }
-.member-simple-card.role-Member { border-top: 3px solid #2196F3; }
-.member-simple-card.role-GuestAssociate { border-top: 3px solid #E91E63; }
-.member-simple-card.role-GuestMember { border-top: 3px solid #FF9800; }
-.member-simple-card.role-DistrictSecretary { border-top: 3px solid #9C27B0; }
-.member-simple-card.role-DistrictPresident { border-top: 3px solid #F44336; }
-.member-simple-card.role-StatePresident { border-top: 3px solid #673AB7; }
+.member-simple-card.role-Associate {
+  border-top: 3px solid #4CAF50;
+}
+
+.member-simple-card.role-Member {
+  border-top: 3px solid #2196F3;
+}
+
+.member-simple-card.role-GuestAssociate {
+  border-top: 3px solid #E91E63;
+}
+
+.member-simple-card.role-GuestMember {
+  border-top: 3px solid #FF9800;
+}
+
+.member-simple-card.role-DistrictSecretary {
+  border-top: 3px solid #9C27B0;
+}
+
+.member-simple-card.role-DistrictPresident {
+  border-top: 3px solid #F44336;
+}
+
+.member-simple-card.role-StatePresident {
+  border-top: 3px solid #673AB7;
+}
 
 .member-simple-photo {
   width: 100%;

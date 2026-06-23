@@ -44,7 +44,7 @@ function MemberDashboard() {
   const [careerFilter, setCareerFilter] = useState([]);
   const [educationFilter, setEducationFilter] = useState([]);
   const [departmentFilter, setDepartmentFilter] = useState([]);
-  const [ageRangeFilter, setAgeRangeFilter] = useState("");
+  const [ageRangeFilter, setAgeRangeFilter] = useState({ min: "", max: "" });
   const [passedOutYearFilter, setPassedOutYearFilter] = useState({ min: "", max: "" });
   const [profileCompletionFilter, setProfileCompletionFilter] = useState("");
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
@@ -176,6 +176,7 @@ function MemberDashboard() {
     { value: "English Literature", label: "English Literature" },
     { value: "Food Technology", label: "Food Technology" },
     { value: "General", label: "General" },
+    { value: "IT", label: "IT" },
     { value: "Management", label: "Management" },
     { value: "Mechanical", label: "Mechanical" },
     { value: "Supplychain Operation", label: "Supplychain Operation" },
@@ -479,11 +480,8 @@ function MemberDashboard() {
 
     const age = calculateAge(member.dateOfBirth);
     let matchesAge = true;
-    if (ageRangeFilter === "Under 20") matchesAge = age !== null && age < 20;
-    else if (ageRangeFilter === "20-30") matchesAge = age !== null && age >= 20 && age <= 30;
-    else if (ageRangeFilter === "31-40") matchesAge = age !== null && age >= 31 && age <= 40;
-    else if (ageRangeFilter === "41-50") matchesAge = age !== null && age >= 41 && age <= 50;
-    else if (ageRangeFilter === "50+") matchesAge = age !== null && age > 50;
+    if (ageRangeFilter.min) matchesAge = matchesAge && age !== null && age >= parseInt(ageRangeFilter.min);
+    if (ageRangeFilter.max) matchesAge = matchesAge && age !== null && age <= parseInt(ageRangeFilter.max);
 
     let matchesYear = true;
     const latestYear = member.education && member.education.length > 0
@@ -513,7 +511,7 @@ function MemberDashboard() {
 
   const sortedAndFilteredMembers = getSortedMembers(filteredMembers);
 
-  const isFilterActive = roleFilter !== "" || skillFilter.length > 0 || careerFilter.length > 0 || educationFilter.length > 0 || departmentFilter.length > 0 || ageRangeFilter !== "" || passedOutYearFilter.min !== "" || passedOutYearFilter.max !== "" || profileCompletionFilter !== "";
+  const isFilterActive = roleFilter !== "" || skillFilter.length > 0 || careerFilter.length > 0 || educationFilter.length > 0 || departmentFilter.length > 0 || ageRangeFilter.min !== "" || ageRangeFilter.max !== "" || passedOutYearFilter.min !== "" || passedOutYearFilter.max !== "" || profileCompletionFilter !== "";
   const isAnalyticsActive = analyticsOpen;
   const isSearchActive = searchTerm !== "";
 
@@ -782,27 +780,26 @@ function MemberDashboard() {
                 />
               </div>
 
-              <div className="filter-group">
+              <div className="filter-group age-range-group">
                 <label>Age Range</label>
-                <Select
-                  options={[
-                    { value: "Under 20", label: "Under 20" },
-                    { value: "20-30", label: "20-30" },
-                    { value: "31-40", label: "31-40" },
-                    { value: "41-50", label: "41-50" },
-                    { value: "50+", label: "50+" }
-                  ]}
-                  value={ageRangeFilter ? { value: ageRangeFilter, label: ageRangeFilter } : null}
-                  onChange={(selected) => setAgeRangeFilter(selected ? selected.value : "")}
-                  placeholder="Filter by age..."
-                  isClearable
-                  menuPortalTarget={document.body}
-                  menuPosition="fixed"
-                  styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                    control: (base) => ({ ...base, minHeight: '38px' })
-                  }}
-                />
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={ageRangeFilter.min}
+                    onChange={(e) => setAgeRangeFilter(prev => ({ ...prev, min: e.target.value }))}
+                    className="age-input"
+                    style={{ width: '80px', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={ageRangeFilter.max}
+                    onChange={(e) => setAgeRangeFilter(prev => ({ ...prev, max: e.target.value }))}
+                    className="age-input"
+                    style={{ width: '80px', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  />
+                </div>
               </div>
 
               <div className="filter-group year-range-group">
@@ -855,7 +852,7 @@ function MemberDashboard() {
                   setCareerFilter([]);
                   setEducationFilter([]);
                   setDepartmentFilter([]);
-                  setAgeRangeFilter("");
+                  setAgeRangeFilter({ min: "", max: "" });
                   setPassedOutYearFilter({ min: "", max: "" });
                   setProfileCompletionFilter("");
                   setSearchTerm("");
@@ -926,11 +923,13 @@ function MemberDashboard() {
 
           {/* Results Summary */}
           <div className="results-summary">
-            <span>Showing {sortedAndFilteredMembers.length} members</span>
+            <span className="total-members-count">
+              Showing <strong>{sortedAndFilteredMembers.length}</strong> members
+            </span>
             {sortConfig.key && (
-              <span className="current-sort">
-                Sorted by: {sortOptions.find(opt => opt.value === sortConfig.key)?.label}
-                ({sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'})
+              <span className="total-members-count">
+                Sorted by: <strong>{sortOptions.find(opt => opt.value === sortConfig.key)?.label}</strong>
+                (<em>{sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}</em>)
               </span>
             )}
           </div>
