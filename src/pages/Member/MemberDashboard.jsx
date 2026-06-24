@@ -32,6 +32,8 @@ function MemberDashboard() {
     skills: [],
     career: [],
     education: [],
+    district: "",
+    place: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -225,6 +227,8 @@ function MemberDashboard() {
       if (form.dateOfBirth) formData.append('dateOfBirth', form.dateOfBirth);
       if (form.educationalDepartment) formData.append('educationalDepartment', form.educationalDepartment);
       if (form.passedOutYear) formData.append('passedOutYear', form.passedOutYear);
+      if (form.district) formData.append('district', form.district);
+      if (form.place) formData.append('place', form.place);
 
       // Append arrays as JSON strings
       if (form.skills?.length) {
@@ -270,6 +274,8 @@ function MemberDashboard() {
       skills: [],
       career: [],
       education: [],
+      district: "",
+      place: "",
     });
     setEditingId(null);
   };
@@ -291,6 +297,8 @@ function MemberDashboard() {
         ? member.career.map((c) => ({ value: c, label: c }))
         : [],
       education: member.education || [],
+      district: member.district || "",
+      place: member.place || "",
     });
     setEditingId(member._id);
     setFormOpen(true);
@@ -916,6 +924,7 @@ function MemberDashboard() {
                   departmentOptions={departmentOptions}
                   passedOutYearOptions={passedOutYearOptions}
                   handleClose={() => setFormOpen(false)}
+                  members={members}
                 />
               </div>
             </div>

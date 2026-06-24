@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import DatePicker from "react-datepicker";
 import { FiX, FiUpload, FiUser } from "react-icons/fi";
-import "react-datepicker/dist/react-datepicker.css";
+import DistrictPlaceSelect from "./commonData/DistrictPlaceSelect";
 import "./MemberForm.css";
+
+const roleOptions = [
+  { value: "Associate", label: "Associate" },
+  { value: "Guest Associate", label: "Guest Associate" },
+  { value: "Member", label: "Member" },
+  { value: "GuestMember", label: "Guest Member" },
+  { value: "District Secretary", label: "District Secretary" },
+  { value: "District President", label: "District President" },
+  { value: "State President", label: "State President" },
+];
 
 const MemberForm = ({
   form,
@@ -18,39 +27,208 @@ const MemberForm = ({
   educationOptions,
   departmentOptions,
   passedOutYearOptions,
+  members = [],
 }) => {
-  const [dob, setDob] = useState(null);
+  const [dobText, setDobText] = useState("");
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
 
-  // Parse date function
-  const parseDateFromString = (dateString) => {
-    if (!dateString) return null;
-    const [year, month, day] = dateString.split("-");
-    if (!year || !month || !day) return null;
-    return new Date(year, month - 1, day);
+  const isValidDate = (day, month, year) => {
+    const d = parseInt(day, 10);
+    const m = parseInt(month, 10) - 1; // 0-indexed month
+    const y = parseInt(year, 10);
+    if (isNaN(d) || isNaN(m) || isNaN(y)) return false;
+    const date = new Date(y, m, d);
+    return date.getFullYear() === y && date.getMonth() === m && date.getDate() === d;
   };
 
-  const formatDateForStorage = (date) => {
-    if (!date) return "";
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+  const formatDigits = (digits) => {
+    let formatted = "";
+    let i = 0;
+
+    // 1. Process DD (Day)
+    if (i < digits.length) {
+      const d1 = digits[i];
+      i++;
+
+      if (d1 >= "4" && d1 <= "9") {
+        // Single digit day: auto-prepend 0 and add slash
+        formatted += `0${d1}/`;
+      } else {
+        // Could be a 2-digit day (starting with 0, 1, 2, 3)
+        if (i < digits.length) {
+          const d2 = digits[i];
+          i++;
+          const dayVal = parseInt(d1 + d2, 10);
+          if (dayVal >= 1 && dayVal <= 31) {
+            formatted += `${d1}${d2}/`;
+          } else {
+            // Treat d1 as single digit day (0+d1/) and process d2 next
+            formatted += `0${d1}/`;
+            i--;
+          }
+        } else {
+          formatted += d1;
+        }
+      }
+    }
+
+    // 2. Process MM (Month)
+    if (i < digits.length) {
+      const m1 = digits[i];
+      i++;
+
+      if (m1 >= "2" && m1 <= "9") {
+        // Single digit month: auto-prepend 0 and add slash
+        formatted += `0${m1}/`;
+      } else {
+        // Could be a 2-digit month (starting with 0 or 1)
+        if (i < digits.length) {
+          const m2 = digits[i];
+          i++;
+          const monthVal = parseInt(m1 + m2, 10);
+          if (monthVal >= 1 && monthVal <= 12) {
+            formatted += `${m1}${m2}/`;
+          } else {
+            // Treat m1 as single digit month (0+m1/) and process m2 next
+            formatted += `0${m1}/`;
+            i--;
+          }
+        } else {
+          formatted += m1;
+        }
+      }
+    }
+
+    // 3. Process YYYY (Year)
+    if (i < digits.length) {
+      const yearPart = digits.slice(i, i + 4);
+      formatted += yearPart;
+    }
+
+    return formatted;
   };
 
-  const handleDateChange = (date) => {
-    setDob(date);
-    setForm({ ...form, dateOfBirth: formatDateForStorage(date) });
+  const formatDobInput = (value, prevValue = "") => {
+    const digits = value.replace(/\D/g, "");
+
+    // Handle backspace deleting a slash
+    if (value.length < prevValue.length) {
+      const prevDigits = prevValue.replace(/\D/g, "");
+      if (digits.length === prevDigits.length) {
+        return formatDigits(digits.slice(0, -1));
+      }
+      return formatDigits(digits);
+    }
+
+    return formatDigits(digits);
+  };
+
+  const handleDobChange = (e) => {
+    const input = e.target;
+    const rawVal = input.value;
+    const cursor = input.selectionStart;
+    const formatted = formatDobInput(rawVal, dobText);
+
+    // Calculate cursor position
+    let formattedCursor = 0;
+    if (cursor === rawVal.length) {
+      formattedCursor = formatted.length;
+    } else {
+      const rawBeforeCursor = rawVal.slice(0, cursor);
+      const digitsBeforeCursor = rawBeforeCursor.replace(/\D/g, "").length;
+
+      let digitCount = 0;
+      for (let idx = 0; idx < formatted.length; idx++) {
+        if (formatted[idx] !== "/") {
+          digitCount++;
+        }
+        if (digitCount === digitsBeforeCursor) {
+          formattedCursor = idx + 1;
+          break;
+        }
+      }
+      if (digitsBeforeCursor === 0) {
+        formattedCursor = 0;
+      } else if (digitCount < digitsBeforeCursor) {
+        formattedCursor = formatted.length;
+      }
+    }
+
+    setDobText(formatted);
+
+    // Validation & updating form state
+    const parts = formatted.split("/");
+    if (parts.length === 3 && parts[2].length === 4) {
+      const [day, month, year] = parts;
+      if (isValidDate(day, month, year)) {
+        const dateStr = `${year}-${month}-${day}`;
+        setForm({ ...form, dateOfBirth: dateStr });
+        input.setCustomValidity("");
+      } else {
+        setForm({ ...form, dateOfBirth: "" });
+        input.setCustomValidity("Please enter a valid date");
+      }
+    } else {
+      setForm({ ...form, dateOfBirth: "" });
+      if (!formatted) {
+        input.setCustomValidity("");
+      } else {
+        input.setCustomValidity("Please enter a complete date (DD/MM/YYYY)");
+      }
+    }
+
+    setTimeout(() => {
+      input.setSelectionRange(formattedCursor, formattedCursor);
+    }, 0);
   };
 
   useEffect(() => {
+    let expectedText = "";
     if (form.dateOfBirth) {
-      setDob(parseDateFromString(form.dateOfBirth));
-    } else {
-      setDob(null);
+      const parts = form.dateOfBirth.split("-");
+      if (parts.length === 3) {
+        const [year, month, day] = parts;
+        expectedText = `${day}/${month}/${year}`;
+      }
+    }
+
+    let currentMappedDate = "";
+    const dobParts = dobText.split("/");
+    if (dobParts.length === 3 && dobParts[2].length === 4) {
+      const [day, month, year] = dobParts;
+      if (isValidDate(day, month, year)) {
+        currentMappedDate = `${year}-${month}-${day}`;
+      }
+    }
+
+    if (form.dateOfBirth !== currentMappedDate) {
+      setDobText(expectedText);
     }
   }, [form.dateOfBirth]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        const formContainer = document.querySelector(".member-form-container");
+        if (!formContainer) return;
+
+        const activeElement = document.activeElement;
+        if (activeElement && formContainer.contains(activeElement) && activeElement !== document.body) {
+          activeElement.blur();
+          e.preventDefault();
+          e.stopPropagation();
+        } else {
+          handleClose();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleClose]);
 
   // Handle photo upload
   const handlePhotoChange = (e) => {
@@ -61,21 +239,21 @@ const MemberForm = ({
         alert("Photo size should be less than 5MB");
         return;
       }
-      
+
       // Validate file type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
         alert("Only JPG, PNG, GIF, and WEBP formats are allowed");
         return;
       }
-      
+
       setPhotoFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoPreview(reader.result);
       };
       reader.readAsDataURL(file);
-      
+
       // Update form with file
       setForm({ ...form, photoFile: file });
     }
@@ -89,9 +267,9 @@ const MemberForm = ({
   }, [form.photoUrl]);
 
   const handlePassedOutYearChange = (selected) => {
-    setForm({ 
-      ...form, 
-      passedOutYear: selected ? selected.value : null 
+    setForm({
+      ...form,
+      passedOutYear: selected ? selected.value : null
     });
   };
 
@@ -101,28 +279,20 @@ const MemberForm = ({
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
       age--;
     }
     return age;
   };
 
-  const getMaxDate = () => {
-    return new Date();
-  };
 
-  const getMinDate = () => {
-    const date = new Date();
-    date.setFullYear(date.getFullYear() - 100);
-    return date;
-  };
 
   return (
     <div className="member-form-container">
       <div className="form-header">
         <h3>{editingId ? 'Edit Member' : 'Add New Member'}</h3>
-        <button 
+        <button
           className="form-close-btn"
           onClick={handleClose}
           type="button"
@@ -132,7 +302,7 @@ const MemberForm = ({
         </button>
       </div>
 
-      <div className="form-section">
+      <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="form-section">
         {/* Photo Upload Field */}
         <div className="form-field photo-upload-field">
           <label>Profile Photo</label>
@@ -195,29 +365,25 @@ const MemberForm = ({
             type="tel"
             placeholder="Enter phone number"
             value={form.phone || ""}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            onChange={(e) => {
+              const onlyNums = e.target.value.replace(/\D/g, "");
+              setForm({ ...form, phone: onlyNums });
+            }}
             required
           />
         </div>
-        
+
         {/* Date of Birth field */}
         <div className="form-field">
           <label className="required">Date of Birth</label>
           <div className="dob-field-container">
-            <DatePicker
-              selected={dob}
-              onChange={handleDateChange}
-              dateFormat="dd/MM/yyyy"
-              placeholderText="DD/MM/YYYY"
+            <input
+              type="text"
+              value={dobText}
+              onChange={handleDobChange}
+              placeholder="DD/MM/YYYY"
               className="dob-input"
-              popperClassName="date-picker-popper"
-              popperPlacement="bottom-start"
-              showMonthDropdown
-              showYearDropdown
-              dropdownMode="select"
-              isClearable
-              maxDate={getMaxDate()}
-              minDate={getMinDate()}
+              maxLength={10}
               required
             />
             {form.dateOfBirth && (
@@ -231,20 +397,28 @@ const MemberForm = ({
         {/* Role Field */}
         <div className="form-field">
           <label className="required">Role</label>
-          <select
-            value={form.role || "Associate"}
-            onChange={(e) => setForm({ ...form, role: e.target.value })}
-            required
-          >
-            <option value="Associate">Associate</option>
-            <option value="Guest Associate">Guest Associate</option>
-            <option value="Member">Member</option>
-            <option value="GuestMember">Guest Member</option>
-            <option value="District Secretary">District Secretary</option>
-            <option value="District President">District President</option>
-            <option value="State President">State President</option>
-          </select>
+          <Select
+            name="role"
+            options={roleOptions}
+            value={roleOptions.find(o => o.value === (form.role || "Associate")) || null}
+            onChange={(selected) => setForm({ ...form, role: selected ? selected.value : "" })}
+            placeholder="Select role"
+            menuPortalTarget={document.body}
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
         </div>
+
+        {/* District & Place — shown only for Guest roles */}
+        {(form.role === "Guest Associate" || form.role === "GuestMember") && (
+          <DistrictPlaceSelect
+            districtValue={form.district || ""}
+            placeValue={form.place || ""}
+            onDistrictChange={(val) => setForm(prev => ({ ...prev, district: val, place: prev.place && prev.place === prev.district ? val : prev.place }))}
+            onPlaceChange={(val) => setForm(prev => ({ ...prev, place: val }))}
+            members={members}
+          />
+        )}
 
         {/* Skills Field */}
         <div className="form-field">
@@ -365,8 +539,8 @@ const MemberForm = ({
 
         <div className="form-buttons">
           <button
+            type="submit"
             className="primary-btn"
-            onClick={handleSubmit}
             disabled={loading}
           >
             {loading ? "Processing..." : editingId ? "Update Member" : "Add Member"}
@@ -379,7 +553,7 @@ const MemberForm = ({
             Clear
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
