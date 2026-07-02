@@ -50,6 +50,8 @@ const DistrictPlaceSelect = ({
   onPlaceChange,
   members = [],
   required = false,
+  districtLabel = "District",
+  placeLabel = "Place",
 }) => {
   const [sameAsDistrict, setSameAsDistrict] = useState(false);
 
@@ -99,7 +101,7 @@ const DistrictPlaceSelect = ({
     <>
       {/* District Dropdown */}
       <div className="form-field">
-        <label className={required ? "required" : ""}>District</label>
+        <label className={required ? "required" : ""}>{districtLabel}</label>
         <Select
           name="district"
           options={TAMIL_NADU_DISTRICTS}
@@ -116,7 +118,7 @@ const DistrictPlaceSelect = ({
       {/* Place Dropdown */}
       <div className="form-field">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <label className={required ? "required" : ""}>Place</label>
+          <label className={required ? "required" : ""}>{placeLabel}</label>
           {districtValue && (
             <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", cursor: "pointer", fontWeight: "normal", color: "#64748b" }}>
               <input

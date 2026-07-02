@@ -32,6 +32,10 @@ const MemberForm = ({
   const [dobText, setDobText] = useState("");
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
+  const presenceStatusOptions = [
+    { value: "Yes", label: "Yes" },
+    { value: "Moved", label: "Moved" },
+  ];
 
   const isValidDate = (day, month, year) => {
     const d = parseInt(day, 10);
@@ -408,6 +412,44 @@ const MemberForm = ({
             classNamePrefix="react-select"
           />
         </div>
+
+        {/* Member Presence Status */}
+        <div className="form-field">
+          <label>Member Presence Status</label>
+          <Select
+            options={presenceStatusOptions}
+            value={presenceStatusOptions.find((option) => option.value === (form.memberPresenceStatus || "Yes")) || null}
+            onChange={(selected) => {
+              const nextStatus = selected ? selected.value : "Yes";
+              setForm({
+                ...form,
+                memberPresenceStatus: nextStatus,
+                movedDistrict: nextStatus === "Moved" ? form.movedDistrict || "" : "",
+                movedPlace: nextStatus === "Moved" ? form.movedPlace || "" : "",
+              });
+            }}
+            placeholder="Select presence status"
+            menuPortalTarget={document.body}
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
+        </div>
+
+        {(form.memberPresenceStatus === "Moved") && (
+          <DistrictPlaceSelect
+            districtValue={form.movedDistrict || ""}
+            placeValue={form.movedPlace || ""}
+            onDistrictChange={(val) => setForm(prev => ({
+              ...prev,
+              movedDistrict: val,
+              movedPlace: prev.movedPlace && prev.movedPlace === prev.movedDistrict ? val : prev.movedPlace,
+            }))}
+            onPlaceChange={(val) => setForm(prev => ({ ...prev, movedPlace: val }))}
+            members={members}
+            districtLabel="Moved District"
+            placeLabel="Moved Place"
+          />
+        )}
 
         {/* District & Place — shown only for Guest roles */}
         {(form.role === "Guest Associate" || form.role === "GuestMember") && (

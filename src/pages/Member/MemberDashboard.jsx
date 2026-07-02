@@ -49,6 +49,9 @@ function MemberDashboard() {
   const [ageRangeFilter, setAgeRangeFilter] = useState({ min: "", max: "" });
   const [passedOutYearFilter, setPassedOutYearFilter] = useState({ min: "", max: "" });
   const [profileCompletionFilter, setProfileCompletionFilter] = useState("");
+  const [memberPresenceStatusFilter, setMemberPresenceStatusFilter] = useState("");
+  const [districtFilter, setDistrictFilter] = useState("");
+  const [placeFilter, setPlaceFilter] = useState("");
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
 
   const [sortConfig, setSortConfig] = useState({
@@ -69,6 +72,26 @@ function MemberDashboard() {
       age--;
     }
     return age;
+  };
+
+  const isProfileComplete = (member) => {
+    if (!member) return false;
+
+    const hasBasicInfo = !!(member.name && member.role && member.phone && member.dateOfBirth && member.photoUrl);
+    const hasPresenceStatus = member.memberPresenceStatus === "Yes" || member.memberPresenceStatus === "Moved";
+    const hasMovedDetails = member.memberPresenceStatus !== "Moved" || (!!member.movedDistrict && !!member.movedPlace);
+    const hasSkills = Array.isArray(member.skills) && member.skills.some((skill) => String(skill).trim());
+    const hasCareer = Array.isArray(member.career) && member.career.some((career) => String(career).trim());
+    const hasCompleteEducation = Array.isArray(member.education) && member.education.some((education) => {
+      const degree = String(education?.degree || "").trim();
+      const department = String(education?.department || "").trim();
+      const passedOutYear = education?.passedOutYear;
+      return degree && department && passedOutYear;
+    });
+    const isGuestRole = member.role === "Guest Associate" || member.role === "GuestMember";
+    const hasGuestLocation = !isGuestRole || (!!member.district && !!member.place);
+
+    return hasBasicInfo && hasPresenceStatus && hasMovedDetails && hasSkills && hasCareer && hasCompleteEducation && hasGuestLocation;
   };
 
   const fetchMembers = async () => {
@@ -201,6 +224,7 @@ function MemberDashboard() {
     { value: 'education', label: 'Education Count' },
     { value: 'educationalDepartment', label: 'Department' },
     { value: 'passedOutYear', label: 'Passed Out Year' },
+    { value: 'memberPresenceStatus', label: 'Presence Status' },
     { value: 'createdAt', label: 'Created Date' },
     { value: 'updatedAt', label: 'Updated Date' },
   ];
@@ -229,6 +253,9 @@ function MemberDashboard() {
       if (form.passedOutYear) formData.append('passedOutYear', form.passedOutYear);
       if (form.district) formData.append('district', form.district);
       if (form.place) formData.append('place', form.place);
+      if (form.memberPresenceStatus) formData.append('memberPresenceStatus', form.memberPresenceStatus);
+      if (form.movedDistrict) formData.append('movedDistrict', form.movedDistrict);
+      if (form.movedPlace) formData.append('movedPlace', form.movedPlace);
 
       // Append arrays as JSON strings
       if (form.skills?.length) {
@@ -276,6 +303,9 @@ function MemberDashboard() {
       education: [],
       district: "",
       place: "",
+      memberPresenceStatus: "Yes",
+      movedDistrict: "",
+      movedPlace: "",
     });
     setEditingId(null);
   };
@@ -299,6 +329,9 @@ function MemberDashboard() {
       education: member.education || [],
       district: member.district || "",
       place: member.place || "",
+      memberPresenceStatus: member.memberPresenceStatus || "Yes",
+      movedDistrict: member.movedDistrict || "",
+      movedPlace: member.movedPlace || "",
     });
     setEditingId(member._id);
     setFormOpen(true);
@@ -434,7 +467,7 @@ function MemberDashboard() {
 
       // Handle string fields
       if (sortConfig.key === 'name' || sortConfig.key === 'memberId' ||
-        sortConfig.key === 'phone' || sortConfig.key === 'educationalDepartment') {
+        sortConfig.key === 'phone' || sortConfig.key === 'educationalDepartment' || sortConfig.key === 'memberPresenceStatus') {
         const valA = (a[sortConfig.key] || '').toString().toLowerCase();
         const valB = (b[sortConfig.key] || '').toString().toLowerCase();
 
@@ -448,6 +481,19 @@ function MemberDashboard() {
   };
 
   const isSortActive = sortConfig.key !== 'name' || sortConfig.direction !== 'asc';
+  const isGuestRoleFilter = roleFilter === "Guest Associate" || roleFilter === "GuestMember";
+  const guestDistrictOptions = [...new Set(
+    members
+      .filter((member) => member.role === "Guest Associate" || member.role === "GuestMember")
+      .map((member) => member.district)
+      .filter(Boolean)
+  )].sort();
+  const guestPlaceOptions = [...new Set(
+    members
+      .filter((member) => (member.role === "Guest Associate" || member.role === "GuestMember") && (!districtFilter || member.district === districtFilter))
+      .map((member) => member.place)
+      .filter(Boolean)
+  )].sort();
 
   const filteredMembers = members.filter((member) => {
     const term = searchTerm.toLowerCase();
@@ -459,6 +505,15 @@ function MemberDashboard() {
       member.career?.some((c) => String(c).toLowerCase().includes(term));
 
     const matchesRole = roleFilter ? member.role === roleFilter : true;
+    const matchesPresenceStatus = memberPresenceStatusFilter
+      ? member.memberPresenceStatus === memberPresenceStatusFilter
+      : true;
+    const matchesDistrict = isGuestRoleFilter
+      ? (districtFilter ? String(member.district || "").toLowerCase().includes(districtFilter.trim().toLowerCase()) : true)
+      : true;
+    const matchesPlace = isGuestRoleFilter
+      ? (placeFilter ? String(member.place || "").toLowerCase().includes(placeFilter.trim().toLowerCase()) : true)
+      : true;
 
     const matchesSkills =
       skillFilter.length > 0
@@ -501,25 +556,17 @@ function MemberDashboard() {
 
     let matchesCompletion = true;
     if (profileCompletionFilter === "Complete") {
-      matchesCompletion = !!(
-        member.name && member.role && member.skills?.length > 0 &&
-        member.education?.length > 0 && member.photoUrl && member.phone &&
-        member.dateOfBirth && member.career?.length > 0
-      );
+      matchesCompletion = isProfileComplete(member);
     } else if (profileCompletionFilter === "Incomplete") {
-      matchesCompletion = !(
-        member.name && member.role && member.skills?.length > 0 &&
-        member.education?.length > 0 && member.photoUrl && member.phone &&
-        member.dateOfBirth && member.career?.length > 0
-      );
+      matchesCompletion = !isProfileComplete(member);
     }
 
-    return matchesSearch && matchesRole && matchesSkills && matchesCareer && matchesEducation && matchesDepartment && matchesAge && matchesYear && matchesCompletion;
+    return matchesSearch && matchesRole && matchesPresenceStatus && matchesDistrict && matchesPlace && matchesSkills && matchesCareer && matchesEducation && matchesDepartment && matchesAge && matchesYear && matchesCompletion;
   });
 
   const sortedAndFilteredMembers = getSortedMembers(filteredMembers);
 
-  const isFilterActive = roleFilter !== "" || skillFilter.length > 0 || careerFilter.length > 0 || educationFilter.length > 0 || departmentFilter.length > 0 || ageRangeFilter.min !== "" || ageRangeFilter.max !== "" || passedOutYearFilter.min !== "" || passedOutYearFilter.max !== "" || profileCompletionFilter !== "";
+  const isFilterActive = roleFilter !== "" || skillFilter.length > 0 || careerFilter.length > 0 || educationFilter.length > 0 || departmentFilter.length > 0 || ageRangeFilter.min !== "" || ageRangeFilter.max !== "" || passedOutYearFilter.min !== "" || passedOutYearFilter.max !== "" || profileCompletionFilter !== "" || memberPresenceStatusFilter !== "" || districtFilter !== "" || placeFilter !== "";
   const isAnalyticsActive = analyticsOpen;
   const isSearchActive = searchTerm !== "";
 
@@ -532,12 +579,7 @@ function MemberDashboard() {
     import('xlsx').then(XLSX => {
       const dataToExport = sortedAndFilteredMembers.map(member => {
         const age = calculateAge(member.dateOfBirth);
-        const isComplete = !!(
-          member.name && member.role && member.skills?.length > 0 &&
-          member.education?.length > 0 && member.educationalDepartment &&
-          member.passedOutYear && member.photoUrl && member.phone &&
-          member.dateOfBirth && member.career?.length > 0
-        ) ? "Yes" : "No";
+        const isComplete = isProfileComplete(member) ? "Yes" : "No";
 
         const sortedEdu = [...(member.education || [])].sort((a, b) => (b.passedOutYear || 0) - (a.passedOutYear || 0));
         const eduString = sortedEdu.map(e => `${e.degree} in ${e.department} (${e.passedOutYear})`).join(" | ");
@@ -708,8 +750,77 @@ function MemberDashboard() {
                 <Select
                   options={roleOptions}
                   value={roleOptions.find((r) => r.value === roleFilter) || null}
-                  onChange={(selected) => setRoleFilter(selected ? selected.value : "")}
+                  onChange={(selected) => {
+                    const nextRole = selected ? selected.value : "";
+                    setRoleFilter(nextRole);
+                    if (nextRole !== "Guest Associate" && nextRole !== "GuestMember") {
+                      setDistrictFilter("");
+                      setPlaceFilter("");
+                    }
+                  }}
                   placeholder="Filter by role..."
+                  isClearable
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    control: (base) => ({ ...base, minHeight: '38px' })
+                  }}
+                />
+              </div>
+
+              {isGuestRoleFilter && (
+                <>
+                  <div className="filter-group">
+                    <label>District</label>
+                    <Select
+                      options={guestDistrictOptions.map((district) => ({ value: district, label: district }))}
+                      value={districtFilter ? { value: districtFilter, label: districtFilter } : null}
+                      onChange={(selected) => {
+                        setDistrictFilter(selected ? selected.value : "");
+                        setPlaceFilter("");
+                      }}
+                      placeholder="Select district..."
+                      isClearable
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        control: (base) => ({ ...base, minHeight: '38px' })
+                      }}
+                    />
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Place</label>
+                    <Select
+                      options={guestPlaceOptions.map((place) => ({ value: place, label: place }))}
+                      value={placeFilter ? { value: placeFilter, label: placeFilter } : null}
+                      onChange={(selected) => setPlaceFilter(selected ? selected.value : "")}
+                      placeholder="Select place..."
+                      isClearable
+                      isDisabled={!districtFilter}
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        control: (base) => ({ ...base, minHeight: '38px' })
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="filter-group">
+                <label>Member Presence Status</label>
+                <Select
+                  options={[
+                    { value: "Yes", label: "Yes" },
+                    { value: "Moved", label: "Moved" }
+                  ]}
+                  value={memberPresenceStatusFilter ? { value: memberPresenceStatusFilter, label: memberPresenceStatusFilter } : null}
+                  onChange={(selected) => setMemberPresenceStatusFilter(selected ? selected.value : "")}
+                  placeholder="Filter by presence status..."
                   isClearable
                   menuPortalTarget={document.body}
                   menuPosition="fixed"
@@ -863,6 +974,9 @@ function MemberDashboard() {
                   setAgeRangeFilter({ min: "", max: "" });
                   setPassedOutYearFilter({ min: "", max: "" });
                   setProfileCompletionFilter("");
+                  setMemberPresenceStatusFilter("");
+                  setDistrictFilter("");
+                  setPlaceFilter("");
                   setSearchTerm("");
                   scrollToTop();
                 }}
