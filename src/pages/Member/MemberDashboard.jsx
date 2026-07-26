@@ -595,7 +595,15 @@ function MemberDashboard() {
           "Career": (member.career || []).join(", "),
           "Education History": eduString,
           "Profile Complete": isComplete,
-          "Created At": member.createdAt ? member.createdAt.split("T")[0] : ""
+          "Photo URL": member.photoUrl || "",
+          "Photo Public ID": member.photoPublicId || "",
+          "District": member.district || "",
+          "Place": member.place || "",
+          "Presence Status": member.memberPresenceStatus || "",
+          "Moved District": member.movedDistrict || "",
+          "Moved Place": member.movedPlace || "",
+          "Created At": member.createdAt ? member.createdAt.split("T")[0] : "",
+          "Updated At": member.updatedAt ? member.updatedAt.split("T")[0] : ""
         };
       });
 
@@ -715,16 +723,16 @@ function MemberDashboard() {
                 Export
               </button>
 
-              <button className="action-btn logout-btn" onClick={handleLogout}>
-                Logout
-              </button>
-
               <button
                 className="action-btn add-btn"
                 onClick={handleAddMemberToggle}
               >
                 <FiUserPlus size={18} />
                 {formOpen ? "Close Form" : "Add Member"}
+              </button>
+
+              <button className="action-btn logout-btn" onClick={handleLogout}>
+                Logout
               </button>
             </div>
           </div>
@@ -1009,7 +1017,7 @@ function MemberDashboard() {
                 </div>
               </div>
               <button
-                className="clear-sort-btn"
+                className="clear-filters-btn"
                 onClick={() => {
                   setSortConfig({ key: 'name', direction: 'asc' });
                   setSortOpen(false);

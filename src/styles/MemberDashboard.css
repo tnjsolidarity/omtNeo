@@ -443,16 +443,16 @@
   margin-bottom: 20px;
 }
 
-.sort-panel {
-  background: white;
-  border: 1px solid #e0e4ea;
+.dashboard-content .sort-section .sort-panel {
+  background: #fee2e2 !important;
+  border: 1px solid #fca5a5 !important;
   padding: 20px;
   border-radius: 12px;
   display: flex;
   gap: 20px;
   align-items: flex-end;
   flex-wrap: wrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08) !important;
 }
 
 .sort-group {
@@ -496,9 +496,13 @@
 }
 
 .sort-option-btn.active {
-  background: #3f51b5;
+  background: #e53935;
   color: white;
-  border-color: #3f51b5;
+  border-color: #e53935;
+}
+
+.sort-option-btn:hover {
+  border-color: #c62828;
 }
 
 .sort-icon {
@@ -507,7 +511,7 @@
 }
 
 .clear-sort-btn {
-  background: #95a5a6;
+  background: #e53935;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -521,7 +525,7 @@
 }
 
 .clear-sort-btn:hover {
-  background: #7f8c8d;
+  background: #c62828;
 }
 
 /* ===== MODAL STYLES ===== */
